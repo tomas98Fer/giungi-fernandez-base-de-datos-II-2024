@@ -2,11 +2,11 @@ package com.proyect.structure;
 
 
 /*
- * Abstract Class that has finallity of  represent an sql datbase artefact
+ * Class that has finallity of  represent an sql datbase artefact
  * like a schemas,columns,etc  
  */
 
-public abstract class MetaObjectDB {
+public class MetaObjectDB {
 
 	protected String name;
 	
