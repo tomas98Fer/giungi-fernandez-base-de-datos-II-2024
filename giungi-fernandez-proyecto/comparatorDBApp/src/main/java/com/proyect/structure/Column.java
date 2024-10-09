@@ -1,27 +1,50 @@
 package com.proyect.structure;
 
-public class Column {
-	
-	private String name;
+public class Column extends MetaObjectDB {
+	/**
+	 * Column type
+	 * */
 	private String type;
 	
-	public Column(String myName, String type) {
-		if(myName == null || type == null) throw new IllegalArgumentException("Parameter error");
-		if(myName.isEmpty() || type.isEmpty()) throw new IllegalArgumentException("Parameter error");
-		this.name = myName;
-		this.type = type;
+	public Column(String name) {
+		super(name);
 	}
 
-	public String getName() {
-	
-		return this.name;
+	/**
+	 * 
+	 * @param name
+	 * @param type
+	 */
+	public Column(String name, String type) {
+		super(name);
+		if(type.isEmpty()) throw new IllegalArgumentException("Parameter type error");
+		this.type = type;
 	}
 	
+	/**
+	 * 
+	 * @return type of column.
+	 */
 	public String getType() {
 		
 		return this.type;
 	}
+
 	
+	/**
+	 * 	
+	 * Comparator columns method.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Column) {
+			Column c = (Column) o;
+			if(this.getName().compareTo(c.getName()) == 0  && this.getType().compareTo(c.getType())== 0)
+				return true;
+		}
+	
+		return false;
+	}
 	
 	
 

@@ -1,26 +1,34 @@
 package com.proyect.structure;
 
-public class Trigger {
-	private String name;
+public class Trigger extends MetaObjectDB {
+
 	private Event event;
-	public Trigger(String triggerName, Event event) {
 	
-		this.name = triggerName;
+	/**
+	 * 
+	 * @param triggerName
+	 * @param event
+	 */
+	public Trigger(String triggerName, Event event) {
+		super(triggerName);
 		this.event = event;
 	
 	}
-
-	public String getName() {
-		
-		return this.name;
-	}
 	
+	/**
+	 * 
+	 * @return kind of trigger event.
+	 */
 	public Event getEvent() {
 		
 		return this.event;
 	}
 	
 	@Override
+	/**
+	 * Comparator trigger method.
+	 * 
+	 */
 	public boolean equals(Object o) {
 		if(!(o instanceof Trigger))
 			return false;

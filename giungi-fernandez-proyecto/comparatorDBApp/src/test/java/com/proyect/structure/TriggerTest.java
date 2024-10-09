@@ -17,6 +17,15 @@ public class TriggerTest {
 		assertTrue(t.getName().compareTo(triggerName) == 0 && t.getEvent() == event);
 	}
 	
+	@Test
+	public void equalTriggers() {
+		
+		MetaObjectDB t1 = new Trigger("incre_trig",Event.INSERT);
+		MetaObjectDB t2 = new Trigger("incre_trig",Event.INSERT);
+		
+		assertTrue(t1.equals(t2));
+			
+	}
 	
 	
 }
