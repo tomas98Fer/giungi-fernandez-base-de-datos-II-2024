@@ -9,9 +9,9 @@ public class Table extends MetaObjectDB  {
 	private ArrayList<Column> columns;
 	
 	//table's primary key.
-	private Key primaryKey;
+	private Index primaryKey;
 	//table's uniques key.
-	private ArrayList<Key> uniqueKeys;
+	private ArrayList<Index> uniqueKeys;
 	
 	//table's foreign keys.
 	private ArrayList<ForeignKey> foreignKeys;
@@ -42,7 +42,7 @@ public class Table extends MetaObjectDB  {
 	 * Getter primaryKey method.
 	 * @return primaryKey.
 	 */
-	public Key getPrimaryKey() {
+	public Index getPrimaryKey() {
 		return primaryKey;
 	}
 	
@@ -50,21 +50,21 @@ public class Table extends MetaObjectDB  {
 	 * Setter primaryKey method
 	 * @param primary key of the table.
 	 */
-	public void setPrimaryKey(Key primaryKey) {
+	public void setPrimaryKey(Index primaryKey) {
 		this.primaryKey = primaryKey;
 	}
 	/**
 	 * Getter unique keys method
 	 * @return List of unique keys at the table.
 	 */
-	public ArrayList<Key> getUniqueKeys() {
+	public ArrayList<Index> getUniqueKeys() {
 		return uniqueKeys;
 	}
 	/**
 	 * Setter unique keys of the table.
 	 * @param unique keys of the table.
 	 */
-	public void setUniqueKeys(ArrayList<Key> uniqueKeys) {
+	public void setUniqueKeys(ArrayList<Index> uniqueKeys) {
 		this.uniqueKeys = uniqueKeys;
 	}
 

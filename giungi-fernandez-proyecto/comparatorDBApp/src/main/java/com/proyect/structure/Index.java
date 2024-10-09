@@ -18,12 +18,12 @@ public class Index extends  MetaObjectDB {
 	 * @param l list of columns that belong to the table. 
 	 */
 	
-	/* public Index(String name, ArrayList<Column> l) {
+	 public Index(String name, ArrayList<Column> l) {
 		super(name);
 		this.columns = l;
 		
 	}
-	*/
+	
 
 
 	
@@ -31,10 +31,10 @@ public class Index extends  MetaObjectDB {
 	 * 
 	 * @return columns of index;
 	 */
-	/*public ArrayList<Column> getColumnsKey(){
+	public ArrayList<Column> getColumnsKey(){
 		
 		return this.columns;
 	}
-	*/
+	
 	
 }

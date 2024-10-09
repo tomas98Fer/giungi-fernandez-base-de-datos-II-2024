@@ -2,8 +2,10 @@ package com.proyect.structure;
 
 import java.util.ArrayList;
 
-public class ForeignKey extends Key{
+public class ForeignKey extends Index{
 
+	private Table reference;
+	private ArrayList<Column> columnsReference;
 	public ForeignKey(String name) {
 		super(name);
 		
