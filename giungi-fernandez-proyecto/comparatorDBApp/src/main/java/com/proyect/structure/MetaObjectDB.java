@@ -26,5 +26,11 @@ public class MetaObjectDB {
 		return this.name;
 	}
 	
+	@Override
+	public String toString() {
+		
+		return "MetaObjectDB name: " + this.name ;
+		
+	}
 	
 }
