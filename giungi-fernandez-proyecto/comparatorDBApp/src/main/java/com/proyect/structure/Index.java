@@ -23,8 +23,7 @@ public class Index extends  MetaObjectDB {
 		this.columns = l;
 		
 	}
-	
-
+	 
 
 	
 	/**
@@ -34,6 +33,13 @@ public class Index extends  MetaObjectDB {
 	public ArrayList<Column> getColumns(){
 		
 		return this.columns;
+	}
+	
+	@Override
+	
+	public String toString() {
+		
+		return "[Index name: " + this.getName()+"]";
 	}
 	
 	
