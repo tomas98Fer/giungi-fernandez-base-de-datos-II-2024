@@ -47,5 +47,11 @@ public class Column extends MetaObjectDB {
 	}
 	
 	
+	@Override
+	public String toString() {
+		String res = "Column:  \n" + "name: " + this.getName() + " type: " + this.type +"\n";
+		return res;
+	}
+	
 
 }
