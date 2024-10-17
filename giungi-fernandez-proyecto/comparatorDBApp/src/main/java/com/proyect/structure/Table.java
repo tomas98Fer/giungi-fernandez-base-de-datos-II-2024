@@ -99,7 +99,42 @@ public class Table extends MetaObjectDB  {
 		this.triggers = triggers;
 	}
 
-
+	/**
+	 * 
+	 * @param idx is other PrimaryKey.
+	 * @return true iff both primary keys are equals.
+	 * @return false in otherwise.
+	 */
+	public boolean equalsPK(Index pk) {
+		
+		
+		return this.primaryKey.getName().equals(pk.getName()) && this.primaryKey.equals(pk);
+	}
+	
+	
+	@Override
+	public String toString() {
+		String result = "Table : " + this.getName() + "\n";
+		for(Column c : this.columns) {
+			result += c.toString() ;
+			
+		}
+		result += "\n";
+		result += toStringPK();
+		result += "End  Table Iformation.\n";
+		return  result;
+		
+	}
+	
+	//string primary key
+	private String toStringPK() {
+		String res = "PRIMARY KEY:\n";
+		res += "name: " + this.primaryKey.getName() + "\n";
+		for(Column c : this.primaryKey.getColumns()) {
+			res+= c.toString();
+		}
+		return res;
+	}
 	
 	
 	
