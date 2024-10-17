@@ -26,7 +26,7 @@ public class IndexTest {
 	 * the same Type columns order.
 	 */
 	@ParameterizedTest(name = "{index}: {1} and {0} are equals {2}")
-	@MethodSource("findLastArgsProvider")
+	@MethodSource("indexEqualsProvider")
 	public void equalIndex(Index input1, Index input2, boolean expectedResult) {
 		
 		assertTrue(input1.equals(input2) == expectedResult);
@@ -44,7 +44,7 @@ public class IndexTest {
 	}
 	
 	
-	static Stream<Arguments> findLastArgsProvider() {
+	static Stream<Arguments> indexEqualsProvider() {
 		Column c0 = new Column("direccion","VARCHAR");
 		Column c1 = new Column("telefono","VARCHAR");
 		Column c2 = new Column("DNI","INTEGER");
