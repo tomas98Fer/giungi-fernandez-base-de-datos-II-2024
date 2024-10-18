@@ -121,7 +121,9 @@ public class Table extends MetaObjectDB  {
 		}
 		result += "\n";
 		result += toStringPK();
-		result += "End  Table Iformation.\n";
+		result += toStringFKs();
+		result += toStringUKs();
+		result += "\n\nEnd  Table Iformation.\n";
 		return  result;
 		
 	}
@@ -129,14 +131,40 @@ public class Table extends MetaObjectDB  {
 	//string primary key
 	private String toStringPK() {
 		String res = "PRIMARY KEY:\n";
-		res += "name: " + this.primaryKey.getName() + "\n";
-		for(Column c : this.primaryKey.getColumns()) {
-			res+= c.toString();
+		if(this.primaryKey != null) {
+			res += "name: " + this.primaryKey.getName() + "\n";
+			for(Column c : this.primaryKey.getColumns()) {
+				res+= c.toString();
+			}
+		}
+		else {
+			res += "The table hasn't primary key.\n";
 		}
 		return res;
 	}
 	
+	//string primary key
+	private String toStringFKs() {
+		if(this.foreignKeys == null)
+			return "FOREIGN KEY: The table hasn't FOREIGN KEYS.\n";
+		String res = "";
+		for(ForeignKey fk : this.foreignKeys) {
+			res += fk.toString();
+		}
+		res += "\n";
+		return res;
+	}
 	
-	
+	// string unique keys
+	private String toStringUKs() {
+		if(this.uniqueKeys == null)
+			return "UNIQUE KEY: The table hasn't UNIQUE KEYS.\n";
+		String res = "UNIQUE KEYS";
+		for(Index uk : this.uniqueKeys) {
+			res += uk.toString();
+		}
+		res += "\n";
+		return res;
+	}
 	
 }
