@@ -52,12 +52,17 @@ public class ExtractionMetaDataDB {
 			tableList.add(t);
 			
 		}
-		//Set all foreign key for each table
+	
+		ArrayList<ForeignKey> fkList = null;
+		ArrayList<Index> idxList = null;
+		//Set all foreign keys for each table
+		//Set all unique keys for each table
 		for(int i = 0; i < tableList.size(); i++ ) {
 			
-			ArrayList<ForeignKey> fkList = getForeignsKeys(schemaName,tableList.get(i).getName(),tableList);
+			fkList = getForeignsKeys(schemaName,tableList.get(i).getName(),tableList);
 			tableList.get(i).setForeignKeys(fkList);
-			
+			idxList = getUniqueKeys(schemaName,tableList.get(i).getName(),tableList.get(i).getColumns());
+			tableList.get(i).setUniqueKeys(idxList);
 		}
 		
 		
@@ -66,8 +71,15 @@ public class ExtractionMetaDataDB {
 		 
 	 }
 	
-	
-	private ArrayList<ForeignKey> getForeignsKeys(String schemaName, String tableName, ArrayList<Table> tableList) throws SQLException {
+	/**
+	 * 
+	 * @param schemaName
+	 * @param tableName
+	 * @param tableList
+	 * @return
+	 * @throws SQLException
+	 */
+	public ArrayList<ForeignKey> getForeignsKeys(String schemaName, String tableName, ArrayList<Table> tableList) throws SQLException {
 		ResultSet rsFKs = metaData.getImportedKeys(null , schemaName , tableName);
 		if(!rsFKs.next()) {
 			return null;
@@ -109,7 +121,13 @@ public class ExtractionMetaDataDB {
 
 
 
-
+	/**
+	 * Extract columns information.
+	 * @param schemaName can be null.
+	 * @param tableName name of the table where columns belong.
+	 * @return List with columns of the table.
+	 * @throws SQLException
+	 */
 	public ArrayList<Column> getColumns(String schemaName, String tableName) throws SQLException {	
 		
 		ResultSet rsColumns = metaData.getColumns(null , schemaName , tableName , null);
@@ -126,6 +144,14 @@ public class ExtractionMetaDataDB {
 		 
 	 }
 	
+	/**
+	 * Extract primary key information of the table given the name table 
+	 * @param schemaName can be null
+	 * @param tableName name of the table.
+	 * @param columnsTable List columns that conform the table.
+	 * @return primary Key Information or null
+	 * @throws SQLException
+	 */
 	public Index getPrimaryKey(String schemaName, String tableName,ArrayList<Column> columnsTable) throws SQLException {
 		ResultSet rsColumnsPK = metaData.getPrimaryKeys(null , schemaName , tableName);
 		ArrayList<Column> columnPKList = new ArrayList<Column>();
@@ -152,6 +178,41 @@ public class ExtractionMetaDataDB {
 		return new Index(namePK,columnPKList);
 		
 	}
+	/**
+	 * Extract the unique keys of the table.
+	 * @param schemaName schema name. Can be null.
+	 * @param tableName name of the table
+	 * @param columnsTable list of columns that conforms the table.
+	 * @return return all unique keys list in the table.Can be empty .
+	 * @throws SQLException 
+	 */
+	public ArrayList<Index> getUniqueKeys(String schemaName, String tableName,ArrayList<Column> columnsTable) throws SQLException{
+		ResultSet rsUniqueKeys = metaData.getIndexInfo(null,schemaName,tableName,true, true);
+		ArrayList<Index> uniqueKeysList = new ArrayList<Index>();
+		String oldUniqueKeyName = "";
+		String currentUniqueKeyName = "";
+		String columnName = "";
+		Column c = null;
+		Index idx = null;
+		if(!rsUniqueKeys.next())
+			return null;
+		rsUniqueKeys.previous();
+		while(rsUniqueKeys.next()) {
+			
+			currentUniqueKeyName = rsUniqueKeys.getString("INDEX_NAME");
+			if(!currentUniqueKeyName.equals(oldUniqueKeyName)) {
+				oldUniqueKeyName = currentUniqueKeyName;
+				columnName = rsUniqueKeys.getString("COLUMN_NAME");
+				c = getColumn(columnName,columnsTable);
+				idx = new Index(currentUniqueKeyName);
+				idx.getColumns().add(c);
+				uniqueKeysList.add(idx);
+			}
+			idx.getColumns().add(c);
+		}
+		
+		return uniqueKeysList;
+	}
 	
 	
 	// get a Column of a list of Columns given a name
@@ -174,5 +235,7 @@ public class ExtractionMetaDataDB {
 		return null;
 	}
 
+	
+	
 
 }
