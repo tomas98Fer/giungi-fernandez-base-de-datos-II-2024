@@ -1,12 +1,7 @@
 package com.proyect.structure;
-import static org.junit.Assert.assertFalse;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
-
-
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for simple App.
@@ -27,19 +22,39 @@ public class ColumnTest {
 	/* The name and type of column can not be empty or null
 	 * */
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void noEmptyNameOrTypeinAColumn() {
+	@Test
+	public void noEmptyColumnNameTest() {
 		String myName = "";
+		assertThrows(IllegalAccessException.class, () -> {
+			new Column(myName,"VARCHAR");
+		});
+	}
+
+	@Test
+	public void noEmptyTypeTest() {
 		String type = "";
-		new Column(myName,type);
+		assertThrows(IllegalAccessException.class, () -> {
+			new Column("name_costumer",type);
+		});
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void noNullNameOrTypeinAColumn() {
+	@Test
+	public void noNullNameOfColumnTest() {
 		String myName = null;
-		String type = null;
-		new Column(myName,type);
+		assertThrows(IllegalAccessException.class, () -> {
+			new Column(myName,"VARCHAR");
+		});
 	}
+
+	@Test
+	public void noNullTypeOfColumnTest() {
+		String type = null;
+		assertThrows(IllegalAccessException.class, () -> {
+			new Column("name_costumer",type);
+		});
+	}
+
+
 	
 	
 	@Test
@@ -74,8 +89,5 @@ public class ColumnTest {
 		assertFalse(c.equals(t));
 	
 	}
-	
-	
-	
 	
 }

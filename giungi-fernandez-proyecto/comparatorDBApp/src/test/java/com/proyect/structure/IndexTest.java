@@ -1,13 +1,12 @@
 package com.proyect.structure;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.stream.Stream;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class IndexTest {
@@ -25,7 +24,7 @@ public class IndexTest {
 	 * Two Index are equals iff both and have the same number of columns and 
 	 * the same Type columns order.
 	 */
-	@ParameterizedTest(name = "{index}: {1} and {0} are equals {2}")
+	@ParameterizedTest
 	@MethodSource("indexEqualsProvider")
 	public void equalIndex(Index input1, Index input2, boolean expectedResult) {
 		
@@ -57,6 +56,7 @@ public class IndexTest {
 		l2.add(c0);l2.add(c1);l2.add(c1);
 
 		l3.add(c0);
+		
 		return Stream.of(
 		Arguments.of(new Index("Cliente_idx",l1),new Index("Cliente_idx",l1), true ),
 		Arguments.of(new Index("Cliente_idx",l1),new Index("Cliente_idx",l2), false ),
