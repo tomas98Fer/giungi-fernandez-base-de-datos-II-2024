@@ -17,7 +17,7 @@ public class Column extends MetaObjectDB {
 	 */
 	public Column(String name, String type) {
 		super(name);
-		if(type.isEmpty()) throw new IllegalArgumentException("Parameter type error");
+		if(type == null || type.isEmpty()  ) throw new IllegalArgumentException("Parameter type error");
 		this.type = type;
 	}
 	

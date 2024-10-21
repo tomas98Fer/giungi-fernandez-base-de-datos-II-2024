@@ -25,7 +25,7 @@ public class ColumnTest {
 	@Test
 	public void noEmptyColumnNameTest() {
 		String myName = "";
-		assertThrows(IllegalAccessException.class, () -> {
+		assertThrows(IllegalArgumentException.class, () -> {
 			new Column(myName,"VARCHAR");
 		});
 	}
@@ -33,7 +33,7 @@ public class ColumnTest {
 	@Test
 	public void noEmptyTypeTest() {
 		String type = "";
-		assertThrows(IllegalAccessException.class, () -> {
+		assertThrows(IllegalArgumentException.class, () -> {
 			new Column("name_costumer",type);
 		});
 	}
@@ -41,7 +41,7 @@ public class ColumnTest {
 	@Test
 	public void noNullNameOfColumnTest() {
 		String myName = null;
-		assertThrows(IllegalAccessException.class, () -> {
+		assertThrows(IllegalArgumentException.class, () -> {
 			new Column(myName,"VARCHAR");
 		});
 	}
@@ -49,7 +49,7 @@ public class ColumnTest {
 	@Test
 	public void noNullTypeOfColumnTest() {
 		String type = null;
-		assertThrows(IllegalAccessException.class, () -> {
+		assertThrows(IllegalArgumentException.class, () -> {
 			new Column("name_costumer",type);
 		});
 	}
