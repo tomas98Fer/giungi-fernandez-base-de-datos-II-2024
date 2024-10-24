@@ -1,4 +1,4 @@
-package com.proyect.structure;
+package com.project.structure;
 
 
 /*
