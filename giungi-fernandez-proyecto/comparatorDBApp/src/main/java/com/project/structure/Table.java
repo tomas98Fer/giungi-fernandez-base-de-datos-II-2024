@@ -1,4 +1,4 @@
-package com.proyect.structure;
+package com.project.structure;
 
 import java.util.ArrayList;
 
@@ -10,9 +10,11 @@ public class Table extends MetaObjectDB  {
 	
 	//table's primary key.
 	private Index primaryKey;
+	
 	//table's uniques key.
 	private ArrayList<Index> uniqueKeys;
 	
+	private ArrayList<Index> indexes;
 	//table's foreign keys.
 	private ArrayList<ForeignKey> foreignKeys;
 	
@@ -68,6 +70,13 @@ public class Table extends MetaObjectDB  {
 		this.uniqueKeys = uniqueKeys;
 	}
 
+	public ArrayList<Index> getIndexes() {
+		return indexes;
+	}
+	public void setIndexes(ArrayList<Index> indexes) {
+		this.indexes = indexes;
+	}
+	
 	/**
 	 * Getter foreign key method.
 	 * @return foreign keys of the table.
@@ -115,17 +124,29 @@ public class Table extends MetaObjectDB  {
 	@Override
 	public String toString() {
 		String result = "Table : " + this.getName() + "\n";
-		for(Column c : this.columns) {
-			result += c.toString() ;
-			
-		}
-		result += "\n";
+		
+		
+		result += toStringColumns();
 		result += toStringPK();
 		result += toStringFKs();
 		result += toStringUKs();
+		result += toStringIdx();
+		result += toStringTrg();
 		result += "\n\nEnd  Table Iformation.\n";
 		return  result;
 		
+	}
+	
+	private String toStringColumns() {
+		String res = "";
+		if(this.columns != null) {
+			res += "COLUMNS:\n";
+			for(Column c : this.columns) {
+				res += c.toString();
+			}
+			res += "\n";
+		}
+		return res;
 	}
 	
 	//string primary key
@@ -159,12 +180,39 @@ public class Table extends MetaObjectDB  {
 	private String toStringUKs() {
 		if(this.uniqueKeys == null)
 			return "UNIQUE KEY: The table hasn't UNIQUE KEYS.\n";
-		String res = "UNIQUE KEYS";
+		String res = "UNIQUE KEYS: \n";
 		for(Index uk : this.uniqueKeys) {
+			
+			res += uk.toString();
+			
+		}
+		res += "\n";
+		return res;
+	}
+	
+	// string indexes
+	private String toStringIdx() {
+		if(this.indexes == null || this.indexes.size() == 0)
+			return "NO HAY INDICES\n";
+		
+		String res = "INDEX: \n";
+		for(Index uk : this.indexes) {
 			res += uk.toString();
 		}
 		res += "\n";
 		return res;
 	}
+	
+	//string triggers
+	private String toStringTrg() {
+		if(this.triggers == null || this.triggers.isEmpty())
+			return "Don't have triggers. \n";
+		String res = "TRIGGERS \n";
+		for(Trigger t : this.triggers) {
+			res += t.toString();
+		}
+		return res;
+	}
+
 	
 }

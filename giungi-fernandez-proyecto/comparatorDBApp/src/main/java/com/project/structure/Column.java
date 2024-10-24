@@ -1,4 +1,4 @@
-package com.proyect.structure;
+package com.project.structure;
 
 public class Column extends MetaObjectDB {
 	/**
@@ -49,7 +49,7 @@ public class Column extends MetaObjectDB {
 	
 	@Override
 	public String toString() {
-		String res = "Column:  \n" + "name: " + this.getName() + " type: " + this.type +"\n";
+		String res = "[Column name: " + this.getName() + ", type: " + this.type +"]\n";
 		return res;
 	}
 	

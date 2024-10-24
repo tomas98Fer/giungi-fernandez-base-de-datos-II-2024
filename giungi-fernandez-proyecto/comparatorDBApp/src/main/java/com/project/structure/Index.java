@@ -1,4 +1,4 @@
-package com.proyect.structure;
+package com.project.structure;
 
 import java.util.ArrayList;
 
@@ -38,8 +38,15 @@ public class Index extends  MetaObjectDB {
 	@Override
 	
 	public String toString() {
+		String res = "";
+		res = " name: " + this.getName()+"\n";
+		for(Column c : this.columns) {
+			
+			res += c.toString();
+			
+		}
 		
-		return "[Index name: " + this.getName()+"]";
+		return res;
 	}
 	
 	

@@ -1,4 +1,4 @@
-package com.proyect.structure;
+package com.project.structure;
 
 import java.util.ArrayList;
 
@@ -105,7 +105,7 @@ public class ForeignKey extends Index{
 	@Override
 	public String toString() {
 		String res = "FOREIGN KEY:\n";
-		res += "fk_name: " + this.getName() + "\n";
+		res += "name: " + this.getName() + "\n";
 		for(Column c : this.getColumns()) {
 			res += c.toString();
 		}
