@@ -111,7 +111,7 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>3.1.0</version>
           <configuration>
-            <mainClass>com.proyect.app.App</mainClass>
+            <mainClass>com.project.app.App</mainClass>
           </configuration>
         </plugin>
       </plugins>
