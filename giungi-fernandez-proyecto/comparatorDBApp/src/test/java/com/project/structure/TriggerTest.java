@@ -1,18 +1,24 @@
-package com.proyect.structure;
+package com.project.structure;
 
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
+import com.project.structure.Event;
+import com.project.structure.MetaObjectDB;
+import com.project.structure.TimeEvent;
+import com.project.structure.Trigger;
 
 public class TriggerTest {
 
 	/*A Trigger has a name and an event. an event can be: UPDATE,INSERT,DELETE,TRUNCATE*/
 	
 	@Test
-	public void triggerHasANameAndAnEvent() {
+	public void triggerHasANameATimeAndAnEvent() {
 		String triggerName = "incre_trigg";
+		TimeEvent time = TimeEvent.AFTER;
 		Event event = Event.UPDATE;
-		Trigger t = new Trigger(triggerName,event);
+		Trigger t = new Trigger(triggerName,time,event);
 		
 		assertTrue(t.getName().compareTo(triggerName) == 0 && t.getEvent() == event);
 	}
@@ -20,12 +26,21 @@ public class TriggerTest {
 	@Test
 	public void equalTriggers() {
 		
-		MetaObjectDB t1 = new Trigger("incre_trig",Event.INSERT);
-		MetaObjectDB t2 = new Trigger("incre_trig",Event.INSERT);
+		MetaObjectDB t1 = new Trigger("incre_trig" , TimeEvent.AFTER , Event.INSERT);
+		MetaObjectDB t2 = new Trigger("incre_trig", TimeEvent.AFTER , Event.INSERT);
 		
 		assertTrue(t1.equals(t2));
 			
 	}
 	
+	@Test
+	public void notequalTriggers() {
+		
+		MetaObjectDB t1 = new Trigger("incre_trig" , TimeEvent.BEFORE , Event.INSERT);
+		MetaObjectDB t2 = new Trigger("incre_trig", TimeEvent.AFTER , Event.INSERT);
+		
+		assertFalse(t1.equals(t2));
+			
+	}
 	
 }
