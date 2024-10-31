@@ -25,6 +25,7 @@ public class DBModelFactory {
 		
 		ArrayList<Table> l = extdb.extractTables();
 		dbm.setTables(l);
+		dbm.setProcedures(extdb.extractStoredProcedure());
 		
 		
 		return dbm;

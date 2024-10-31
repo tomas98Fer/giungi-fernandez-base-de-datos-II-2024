@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class DBModel {
 
 	private ArrayList<Table> tables;
+	
+	private ArrayList<Procedure> procedures;
 
 	/**
 	 * getter tables method.
@@ -24,6 +26,32 @@ public class DBModel {
 		this.tables = ldb;
 		
 	}
+	/**
+	 * 
+	 * @param pd List of procedures.
+	 */
+	public void setProcedures(ArrayList<Procedure> pd) {
+		if( pd == null )
+			throw new IllegalArgumentException("Procedure list param is null.");
+		this.procedures = pd;
+		
+	}
 	
+	
+	public void printProcedures() {
+		
+		for(Procedure p : this.procedures) {
+			System.out.println(p.toString());
+		}
+	}
+
+	public ArrayList<Procedure> getProcedures() {
+	
+		return this.procedures;
+	}
+	
+	
+
+
 	
 }

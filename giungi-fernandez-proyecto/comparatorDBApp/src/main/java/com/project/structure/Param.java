@@ -55,8 +55,9 @@ public class Param extends MetaObjectDB{
 	
 	@Override
 	public String toString() {
-		String res = "PARAM:\n";
-		res += "name: " + this.name + ", type: " + this.typeParam + ", data_type: " + this.dataType ; 
+		String res = "PARAM: " +" name: " + this.name 
+						+ ", type: " + this.typeParam + ", data_type: " 
+						+ this.dataType + "\n" ; 
 		return res;
 	}
 
