@@ -9,7 +9,12 @@ public class Param extends MetaObjectDB{
 		super(name);
 		// TODO Auto-generated constructor stub
 	}
-
+	/**
+	 * 
+	 * @param name name of the param.
+	 * @param typePar type param: IN,OUT,INOUT
+	 * @param datType data type of param int4,varchar,...
+	 */
 	public  Param(String name , int typePar , String datType) {
 		super(name);
 		if(datType == null || datType.isEmpty())
@@ -35,6 +40,24 @@ public class Param extends MetaObjectDB{
 	 */
 	public TYPE_PARAM getTypeParam() {
 		return typeParam;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Param) {
+			Param p = (Param) o;
+			return this.dataType.equals(p.dataType) && this.typeParam == p.getTypeParam();
+		}
+		
+		return false;
+		
+	}
+	
+	@Override
+	public String toString() {
+		String res = "PARAM:\n";
+		res += "name: " + this.name + ", type: " + this.typeParam + ", data_type: " + this.dataType ; 
+		return res;
 	}
 
 	private TYPE_PARAM toTypeParam(int typePar){

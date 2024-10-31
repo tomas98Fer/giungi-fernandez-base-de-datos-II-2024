@@ -3,8 +3,6 @@ package com.project.structure;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import com.project.structure.Column;
-import com.project.structure.Table;
 
 /**
  * Unit test for simple App.
