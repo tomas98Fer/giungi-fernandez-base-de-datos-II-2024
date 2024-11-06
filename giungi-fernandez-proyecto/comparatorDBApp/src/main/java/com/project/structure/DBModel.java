@@ -2,7 +2,12 @@ package com.project.structure;
 
 import java.util.ArrayList;
 
-public class DBModel {
+public class DBModel extends MetaObjectDB {
+
+	
+	public DBModel(String name) {
+		super(name);
+	}
 
 	private ArrayList<Table> tables;
 	

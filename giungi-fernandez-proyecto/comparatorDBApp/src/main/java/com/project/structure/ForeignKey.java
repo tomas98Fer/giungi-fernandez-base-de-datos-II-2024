@@ -66,38 +66,36 @@ public class ForeignKey extends Index{
 	public boolean equals(Object o) {
 		
 		if( o instanceof ForeignKey) {
-			ForeignKey f = (ForeignKey) o;
+			ForeignKey f = (ForeignKey) o;			
 			
-			if(f.name.equals(this.getName())) {
+			if(f.getReference().equals(this.reference)) {
 				
-				if(f.getReference().equals(this.reference)) {
-					
-					if(f.getColumns().size() == this.getColumns().size() && f.getReferencedColumns().size() == this.referencedColumns.size()) {
-						String type_fk1 = null;
-						String type_fk2 = null;
-						// check if types order columns are the same
-						for(int i = 0; i < f.getColumns().size(); i++) {
-							type_fk1 =this.getColumns().get(i).getType();
-							type_fk2 = f.getColumns().get(i).getType();
-							if(!type_fk1.equals(type_fk2))
-								return false;
-						}
-						
-						//check if referenced columns
-						type_fk1 = null;
-						type_fk2 = null;
-						for(int i = 0 ; i < f.getReferencedColumns().size() ; i++) {
-							type_fk1 = this.referencedColumns.get(i).getType();
-							type_fk2 = f.getColumns().get(i).getType();
-							if(!type_fk1.equals(type_fk2))
-								return false;
-						}
-						return true;
-							
+				if(f.getColumns().size() == this.getColumns().size() && f.getReferencedColumns().size() == this.referencedColumns.size()) {
+					String type_fk1 = null;
+					String type_fk2 = null;
+					// check if types order columns are the same
+					for(int i = 0; i < f.getColumns().size(); i++) {
+						type_fk1 =this.getColumns().get(i).getType();
+						type_fk2 = f.getColumns().get(i).getType();
+						if(!type_fk1.equals(type_fk2))
+							return false;
 					}
 					
+					//check if referenced columns
+					type_fk1 = null;
+					type_fk2 = null;
+					for(int i = 0 ; i < f.getReferencedColumns().size() ; i++) {
+						type_fk1 = this.referencedColumns.get(i).getType();
+						type_fk2 = f.getColumns().get(i).getType();
+						if(!type_fk1.equals(type_fk2))
+							return false;
+					}
+					return true;
+						
 				}
+				
 			}
+		
 		}
 		return false;
 	}
