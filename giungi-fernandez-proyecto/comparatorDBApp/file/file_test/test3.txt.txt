@@ -1,0 +1,23 @@
+DATA BASE 2
+Table : Gerente
+PRIMARY KEY:
+The table hasn't primary key.
+FOREIGN KEY: The table hasn't FOREIGN KEYS.
+UNIQUE KEY: The table hasn't UNIQUE KEYS.
+NO HAY INDICES
+Don't have triggers. 
+
+
+End  Table Iformation.
+
+Table : Maquinarias
+PRIMARY KEY:
+The table hasn't primary key.
+FOREIGN KEY: The table hasn't FOREIGN KEYS.
+UNIQUE KEY: The table hasn't UNIQUE KEYS.
+NO HAY INDICES
+Don't have triggers. 
+
+
+End  Table Iformation.
+

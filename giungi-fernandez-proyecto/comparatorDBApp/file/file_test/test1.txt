@@ -1,0 +1,27 @@
+THE TABLES FROMDATA BASE 1 NOT MATCHING WITH TABLES FROM DATA BASE 2.
+DATA BASE 1 TABLES:
+
+Table : Persona
+PRIMARY KEY:
+The table hasn't primary key.
+FOREIGN KEY: The table hasn't FOREIGN KEYS.
+UNIQUE KEY: The table hasn't UNIQUE KEYS.
+NO HAY INDICES
+Don't have triggers. 
+
+
+End  Table Iformation.
+
+DATA BASE 2 TABLES:
+
+Table : Gerente
+PRIMARY KEY:
+The table hasn't primary key.
+FOREIGN KEY: The table hasn't FOREIGN KEYS.
+UNIQUE KEY: The table hasn't UNIQUE KEYS.
+NO HAY INDICES
+Don't have triggers. 
+
+
+End  Table Iformation.
+
