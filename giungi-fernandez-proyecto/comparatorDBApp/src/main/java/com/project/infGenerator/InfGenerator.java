@@ -29,6 +29,14 @@ public class InfGenerator {
 
 			a1 = AllNameofTableNoMatch(db1, db2, f);
 			a2 = aditionalTables( db1 , db2 , f);
+			
+			// buscar las tablas que matchean por nombre
+			
+				//buscarTablas con el mismo nombre (hacer un buscar por nombre en la clace MDBprocedure)
+			
+			
+			
+			//treatmentColumns(db1 , db2 , f);
 			if(!(a1 || a2))
 				out.println("BOTH DATA BASE REPRESENT THE SAME MODEL.");
 			
@@ -39,6 +47,84 @@ public class InfGenerator {
 		}
 				
 }
+
+	private static void treatmentColumns(Table t1, Table t2, File f, String db1N, String db2N) {
+		int pos = -1;
+		Column auxC1 = null;
+		Column auxC2 = null;
+		String description = null;
+		
+		ArrayList<Column> addColt1 = new ArrayList<Column>();
+		ArrayList<Column> addColt2 = new ArrayList<Column>();
+		ArrayList<Column> sameColumns = new ArrayList<Column>();
+		
+		for(int i = 0 ; i < t1.getColumns().size() ; i++) {
+			// ask if exist a column with that name.
+			pos = t2.containsColumName(t1.getColumns().get(i));
+			
+			// column is an additional
+			if(pos == -1) {
+				
+				addColt1.add(t1.getColumns().get(i));
+			}
+			// exist column with the same name in t2.
+			if(pos >= 0 ) {
+				//check if are equals
+				
+				auxC1 = t1.getColumns().get(i);
+				auxC2 = t2.getColumns().get(pos);
+				sameColumns.add(auxC2);
+				
+				if(!auxC1.equals(auxC2)) {
+					writeColumn(auxC1, f , description);
+					writeColumn(auxC2, f ,  description);
+				}
+				//if they aren't dont should print the column.
+				
+			}
+			
+			
+		}
+		// cuando salgo de este siglo obtengo : columnas con mismo nombre ya tratadas y las adicionales de db1
+		
+		//sacar archivos adicionales de t2
+		for(int i = 0 ; i < t2.getColumns().size() ; i ++) {
+			
+			if( !sameColumns.contains(t2.getColumns().get(i))) {
+				addColt2.add(t2.getColumns().get(i));
+			}
+			
+		}
+		// printear tabalas addicionales para ambdas tablas si estan existen.
+		
+		if(addColt1.size() > 0) {
+			//printiar las adicionales de t1.
+		}
+		
+		if() {
+			//printitear las adicionales de t2
+		}
+		
+		
+		/* comparar por nombres
+			si encuentra un mach de columnas por nombre comparar.
+				si son distinto escribir en el file.
+				sino avazar.
+		*/
+	}
+
+	private static void writeColumn(Column auxC1, File f, String description) {
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description);
+		}
+		catch(IOException e) {
+			System.out.println("Error escribiendo en  metodo writeAdditionalTables" + e);
+		}
+		
+	}
 
 	//true if this method write in file
 	private static boolean AllNameofTableNoMatch(DBModel db1, DBModel db2, File f) {

@@ -120,20 +120,27 @@ public class Table extends MetaObjectDB  {
 		return this.primaryKey.getName().equals(pk.getName()) && this.primaryKey.equals(pk);
 	}
 	
-	/** 
-	 * como chequear las claves foraneas de las tablas:
-	 * 
-	 * paso 1) chequear que la lista de claves foraneas sea la misma
-	 * 
-	 * paso 2) por cada clave foranea deberia chequear con todas las claves de la otra tabla
-	 * 
-	 * paso 3) cuando finalice si ninguna coincide con su estructura deberia retornar falso si
-	 * si hay coincidencia continuar con la proxima clave foranea
-	 */
-	
 	/**
 	 * 
+	 * @param c
+	 * @return
 	 */
+	public int containsColumName(Column c) {
+		String name = "";
+		int idx = -1;
+		try {
+			name = c.getName();
+		} catch (Exception e) {
+			return idx--;
+		}
+		for (Column column : this.columns) {
+			idx++;
+			if (column.equals(name)) {
+				return idx;
+			}
+		}
+		return idx;
+	}
 	
 	@Override
 	public String toString() {
@@ -150,6 +157,7 @@ public class Table extends MetaObjectDB  {
 		return  result;
 		
 	}
+	
 	
 	private String toStringColumns() {
 		String res = "";

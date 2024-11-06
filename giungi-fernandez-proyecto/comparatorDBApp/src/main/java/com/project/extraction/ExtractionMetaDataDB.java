@@ -319,7 +319,7 @@ public abstract class ExtractionMetaDataDB {
 		String schema = this.c.getSchema();
 		ArrayList<Procedure> result = new ArrayList<Procedure>();
 		ArrayList<Procedure> p = extractProcedure(dbname , schema);
-		//ArrayList<Procedure> f = extractFunction(dbname , schema);
+		//ArrayList<Procedure> f = extractFunction(dbname , schema); TODOOO
 		if(p != null)
 			result.addAll(p);
 		

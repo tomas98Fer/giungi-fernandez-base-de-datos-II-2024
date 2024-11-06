@@ -54,7 +54,24 @@ public class DBModel extends MetaObjectDB {
 	
 		return this.procedures;
 	}
-	
+
+	public int containsTablename(String name ) {
+		if(name == null || name.isEmpty())
+			throw new IllegalArgumentException("The name Table is incorrect");
+		for(int i = 0 ; i < this.tables.size() ; i++) {
+			
+			if(name.equals(this.tables.get(i).getName()))
+				return i;
+		}
+		
+		return -1;
+		
+		
+		
+		
+		
+	}
+
 	
 
 
