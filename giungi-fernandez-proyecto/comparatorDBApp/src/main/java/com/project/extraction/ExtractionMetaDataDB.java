@@ -9,11 +9,19 @@ import com.project.connection.ConnectionDB;
 import com.project.structure.Column;
 import com.project.structure.ForeignKey;
 import com.project.structure.Index;
+import com.project.structure.Param;
+import com.project.structure.Procedure;
 import com.project.structure.Table;
 import com.project.structure.Trigger;
 
 
-
+/**
+ * 
+ * @author Tomas Fernandez
+ * @author Agustin Giungi
+ *
+ *Abstract class defines meta data extractor objects.
+ */
 public abstract class ExtractionMetaDataDB {
 	
 	private ConnectionDB c = null;
@@ -306,6 +314,61 @@ public abstract class ExtractionMetaDataDB {
 	}
 
 	
+	public ArrayList<Procedure> extractStoredProcedure() {
+		String dbname = this.c.getDatabaseName();
+		String schema = this.c.getSchema();
+		ArrayList<Procedure> result = new ArrayList<Procedure>();
+		ArrayList<Procedure> p = extractProcedure(dbname , schema);
+		//ArrayList<Procedure> f = extractFunction(dbname , schema);
+		if(p != null)
+			result.addAll(p);
+		
+		return result;
+	}
+	
+	//extractor procedure method. Extract procedure stored not function.
+	private ArrayList<Procedure> extractProcedure(String dbname, String schema) {
+		ResultSet rsProced = null;
+		ResultSet rsParam = null;
+		String name_proced = null;
+		String returnType = "void";
+		Param param = null;
+		ArrayList<Param> plist = null;
+		ArrayList<Procedure> procList = new ArrayList<Procedure>();
+		try {
+			rsProced = this.metaData.getProcedures(dbname,schema,null);
+			while(rsProced.next()) {
+				
+				name_proced = rsProced.getString("PROCEDURE_NAME");
+				plist = new ArrayList<Param>();
+				rsParam = this.metaData.getProcedureColumns(dbname, schema, name_proced, null);
+				
+				while(rsParam.next()) {
+					if(rsParam.getInt("COLUMN_TYPE") == 5) {
+						
+						returnType = rsParam.getString("TYPE_NAME");
+					}
+					else {
+						param = new Param(rsParam.getString("COLUMN_NAME"),
+								rsParam.getInt("COLUMN_TYPE"),
+								rsParam.getString("TYPE_NAME"));
+						plist.add(param);
+					}
+				}
+				
+				procList.add(new Procedure(name_proced , returnType , plist));
+				
+
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return procList;
+	}
+
+
 	
 
 }
