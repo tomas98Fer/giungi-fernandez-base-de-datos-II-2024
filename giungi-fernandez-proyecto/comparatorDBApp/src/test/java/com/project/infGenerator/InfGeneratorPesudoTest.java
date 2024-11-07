@@ -14,7 +14,6 @@ public class InfGeneratorPesudoTest {
 public void test1() {
 		Table t = new Table("Persona");
 		Table t1 = new Table("Gerente");
-		//agregar columnas, cp,
 
 		ArrayList<Table> tblist = new ArrayList<Table>();
 		ArrayList<Table> tblist1 = new ArrayList<Table>();
@@ -25,14 +24,13 @@ public void test1() {
 		DBModel db1 = new DBModel("DATA BASE 2");
 		db.setTables(tblist);
 		db1.setTables(tblist1);
-		InfGenerator.findDifferences(db , db1 , "file_test/test1");
+		InfGenerator.findDifferences(db , db1 , "file_test/test1.txt");
 		System.out.println("END, THE FILE WAS MADE.");
 
 	}
 	
 	@Test
-	//ambas tablas son iguales no deberia mostrar nada todavia, podriamos revisar informar 
-	// que son iguales
+	//Both tables are equals.
 	public void sameTablesTest() {
 		Table t = new Table("Persona");
 		Table t1 = new Table("Persona");
@@ -46,8 +44,8 @@ public void test1() {
 		DBModel db1 = new DBModel("DATA BASE 2");
 		db.setTables(tblist);
 		db1.setTables(tblist1);
-		InfGenerator.findDifferences(db , db1 , "file_test/test2");
-		System.out.println("END, THE FILE WAS MADE.");
+		InfGenerator.findDifferences(db , db1 , "file_test/test2.txt");
+	
 	}
 	
 	@Test
@@ -70,14 +68,14 @@ public void test1() {
 		db.setTables(tblist);
 		db1.setTables(tblist1);
 		InfGenerator.findDifferences(db , db1 , "file_test/test3.txt");
-		System.out.println("END, THE FILE WAS MADE.");
+	
 	}
 
 
 	@Test
 	public void sameTableDiffColumnsTest(){
 		Table t0 = new Table("Persona");
-		Table t1 = new Table("Gerente");
+		Table t1 = new Table("Persona");
 		Column c0 = new Column("id", "int");
 		Column c1 = new Column("nombre", "varchar");
 		Column c2 = new Column("apellido", "varchar");
