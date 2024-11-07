@@ -32,7 +32,7 @@ public class DBModelFactory {
 		//we should add choice to oracle 11xe engine
 		ArrayList<Table> l = extdb.extractTables();
 		dbm.setTables(l);
-		dbm.setProcedures(extdb.extractStoredProcedure());
+		dbm.setProcedures(extdb.extractStoredProcedures());
 		
 		
 		return dbm;
