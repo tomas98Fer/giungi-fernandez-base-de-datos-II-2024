@@ -1,7 +1,6 @@
 package com.project.infGenerator;
 
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,6 +11,8 @@ import com.project.structure.Column;
 import com.project.structure.DBModel;
 import com.project.structure.Table;
 
+
+
 public class InfGenerator {
 
 	public static void findDifferences( DBModel db1, DBModel db2 , String fileName ) {
@@ -19,26 +20,31 @@ public class InfGenerator {
 			throw new IllegalArgumentException("Everyone data base model are null");
 		if(fileName == null || fileName.isEmpty()) 
 			throw new IllegalArgumentException("File name is incorrect.");
-		File f = new File("file/" + fileName + ".txt");
-		boolean a1, a2 = false;
+		File f = new File("file/" + fileName);
+
 		try( FileWriter fw = new FileWriter(f);
 			 BufferedWriter bw = new BufferedWriter(fw);
 			 PrintWriter out = new PrintWriter(bw); )	
 		{
 			
-
-			a1 = AllNameofTableNoMatch(db1, db2, f);
-			a2 = aditionalTables( db1 , db2 , f);
-			
+	
 			// buscar las tablas que matchean por nombre
+			for (Table t1: db1.getTables()) {
+				for(Table t2 : db2.getTables()) {
+					String t1_lc = t1.getName().toLowerCase();
+					String t2_lc = t2.getName().toLowerCase();
+					if(t1_lc.equals(t2_lc)) {
+						treatmentColumns(t1,t2,f);
+					}
+				}
+			}
+			//buscarTablas con el mismo nombre (hacer un buscar por nombre en la clace MDBprocedure)
 			
-				//buscarTablas con el mismo nombre (hacer un buscar por nombre en la clace MDBprocedure)
 			
 			
-			
-			//treatmentColumns(db1 , db2 , f);
-			if(!(a1 || a2))
-				out.println("BOTH DATA BASE REPRESENT THE SAME MODEL.");
+			//treatmentColumns(t1 , t2 , f);
+			if(f.length() == 0)
+				out.println("BOTH DATA BASE REPRESENT THE SAAME MODEL.\n askdk\n");
 			
 			bw.close();
 		}
@@ -48,23 +54,25 @@ public class InfGenerator {
 				
 }
 
-	private static void treatmentColumns(Table t1, Table t2, File f, String db1N, String db2N) {
+	private static void treatmentColumns(Table t1, Table t2, File f) {
 		int pos = -1;
-		Column auxC1 = null;
-		Column auxC2 = null;
-		String description = null;
+		Column auxC1;
+		Column auxC2;
+		String description;
 		
 		ArrayList<Column> addColt1 = new ArrayList<Column>();
 		ArrayList<Column> addColt2 = new ArrayList<Column>();
 		ArrayList<Column> sameColumns = new ArrayList<Column>();
 		
 		for(int i = 0 ; i < t1.getColumns().size() ; i++) {
-			// ask if exist a column with that name.
-			pos = t2.containsColumName(t1.getColumns().get(i));
+			// ask if exist a column with the same name.
+			pos = t2.containsColumnName(t1.getColumns().get(i));
 			
+			if (pos == -2){
+				throw new IllegalArgumentException("Error in method containsColumnName");
+			}
 			// column is an additional
 			if(pos == -1) {
-				
 				addColt1.add(t1.getColumns().get(i));
 			}
 			// exist column with the same name in t2.
@@ -76,8 +84,9 @@ public class InfGenerator {
 				sameColumns.add(auxC2);
 				
 				if(!auxC1.equals(auxC2)) {
-					writeColumn(auxC1, f , description);
-					writeColumn(auxC2, f ,  description);
+					description = "SAME COLUMN NAME BUT DIFFERENT TYPE";
+					writeColumn(auxC1, f , description + "IN DB1");
+					writeColumn(auxC2, f ,  description + "IN DB2");
 				}
 				//if they aren't dont should print the column.
 				
@@ -95,35 +104,34 @@ public class InfGenerator {
 			}
 			
 		}
-		// printear tabalas addicionales para ambdas tablas si estan existen.
+		// printear tablas addicionales para ambas tablas si estas existen.
 		
-		if(addColt1.size() > 0) {
-			//printiar las adicionales de t1.
-		}
+		description = "ADDITIONAL COLUMN ON TABLE " + t1.getName() + "OF DATABASE 1";
+		writeAdditionalColumns(f,addColt1,description);
 		
-		if() {
-			//printitear las adicionales de t2
-		}
-		
-		
-		/* comparar por nombres
-			si encuentra un mach de columnas por nombre comparar.
-				si son distinto escribir en el file.
-				sino avazar.
-		*/
+		description = "ADDITIONAL COLUMN ON TABLE " + t2.getName() + "OF DATABASE 2";
+		writeAdditionalColumns(f,addColt2,description);
 	}
 
-	private static void writeColumn(Column auxC1, File f, String description) {
-		try( FileWriter fw1 = new FileWriter(f , true);
-				 BufferedWriter bw1 = new BufferedWriter(fw1);
-				 PrintWriter out1 = new PrintWriter(bw1); )	
-		{
-			out1.println(description);
+	private static void writeAdditionalColumns(File f, ArrayList<Column> columns, String description ){
+			for(Column columnAd : columns){
+				writeColumn(columnAd,f,description);
+			}
+	}
+
+	private static void writeColumn(Column c, File f, String description) {
+		try{ FileWriter fw1 = new FileWriter(f , true);
+				BufferedWriter bw1 = new BufferedWriter(fw1);
+				PrintWriter out1 = new PrintWriter(bw1); 
+				out1.println(description);
+				out1.println(c.toString());
+				out1.close();
+				bw1.close();
+				fw1.close();
 		}
 		catch(IOException e) {
 			System.out.println("Error escribiendo en  metodo writeAdditionalTables" + e);
 		}
-		
 	}
 
 	//true if this method write in file

@@ -125,21 +125,21 @@ public class Table extends MetaObjectDB  {
 	 * @param c
 	 * @return
 	 */
-	public int containsColumName(Column c) {
+	public int containsColumnName(Column c) {
 		String name = "";
-		int idx = -1;
+		int idx = 0;
 		try {
 			name = c.getName();
 		} catch (Exception e) {
-			return idx--;
+			return -1;
 		}
 		for (Column column : this.columns) {
-			idx++;
 			if (column.equals(name)) {
 				return idx;
 			}
+			idx++;
 		}
-		return idx;
+		return -1;
 	}
 	
 	@Override

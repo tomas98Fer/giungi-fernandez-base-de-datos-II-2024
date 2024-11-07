@@ -89,7 +89,7 @@ public class App {
     
     private static void loadFromConfigFile( String [] a, String [] b) {
 	   Properties properties = new Properties();
-        try (InputStream input = Main.class.getClassLoader().getResourceAsStream("config.properties")) {
+        try (InputStream input = App.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
                 throw new IllegalStateException ("Lo siento, no pude encontrar el archivo config.properties");
             }
