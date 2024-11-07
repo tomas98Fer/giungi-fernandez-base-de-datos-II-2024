@@ -1,0 +1,57 @@
+CREATE schema testdb1;
+
+set search_path to testdb1;
+
+CREATE TABLE users (
+    user_id int PRIMARY KEY,
+    username VARCHAR(50) UNIQUE,
+    email VARCHAR(100) UNIQUE
+);
+
+
+CREATE TABLE orders (
+    order_id int PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    order_date DATE,
+    amount NUMERIC(10, 2),
+    status VARCHAR(20)
+);
+
+CREATE TABLE items(
+	item_id int PRIMARY KEY,
+	item_value float,
+	description VARCHAR(100)
+)
+
+
+CREATE TRIGGER set_status_insert
+BEFORE INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION set_default_status(user_id,order_id);
+
+CREATE TRIGGER set_status_before_update
+BEFORE INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION set_default_status(user_id,order_id);
+
+
+CREATE INDEX idx_order_itemid ON items (item_id,item_value);
+
+CREATE INDEX idx_order ON orders (amount);
+	
+
+CREATE FUNCTION set_default_status(user_id_param INT, order_id_param INT)
+RETURNS BOOLEAN AS
+$$
+BEGIN
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE FUNCTION set_user_id(user_id_param INT)
+RETURNS BOOLEAN AS
+$$
+BEGIN
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql;
