@@ -314,22 +314,63 @@ public abstract class ExtractionMetaDataDB {
 	}
 
 	
-	public ArrayList<Procedure> extractStoredProcedure() {
+	public ArrayList<Procedure> extractStoredProcedures() {
 		String dbname = this.c.getDatabaseName();
 		String schema = this.c.getSchema();
 		ArrayList<Procedure> result = new ArrayList<Procedure>();
 		ArrayList<Procedure> p = extractProcedure(dbname , schema);
-		//ArrayList<Procedure> f = extractFunction(dbname , schema); TODOOO
+		ArrayList<Procedure> f = extractStoredFunctions(dbname , schema);
 		if(p != null)
 			result.addAll(p);
+		if(f != null)
+			result.addAll(f);
 		
 		return result;
+	}
+	
+	
+	private ArrayList<Procedure> extractStoredFunctions(String dbname , String schema) {
+		ResultSet rsFunctions = null;
+		ResultSet rsParams = null;
+		String nameFunction = null;
+		String returnType = "void";
+		ArrayList<Procedure> funcList = new ArrayList<Procedure>();
+		ArrayList<Param> plist = null;
+		Param param = null;
+		
+		try{
+			rsFunctions = this.metaData.getFunctions(dbname , schema, null);
+			while(rsFunctions.next()) {
+				nameFunction = rsFunctions.getString("FUNCTION_NAME");
+				plist = new ArrayList<Param>();
+				rsParams = this.metaData.getFunctionColumns(dbname, schema, nameFunction, null);
+				while(rsParams.next()) {
+					if(rsParams.getInt("COLUMN_TYPE") == 5) {
+						returnType = rsParams.getString("TYPE_NAME");
+					}
+					else {
+						param = new Param(rsParams.getString("COLUMN_NAME"),
+								rsParams.getInt("COLUMN_TYPE"),
+								rsParams.getString("TYPE_NAME"));
+						plist.add(param);
+					}
+					funcList.add(new Procedure(nameFunction , returnType , plist));
+					
+				}
+			} 
+			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		}
+		
+		return funcList;
 	}
 	
 	//extractor procedure method. Extract procedure stored not function.
 	private ArrayList<Procedure> extractProcedure(String dbname, String schema) {
 		ResultSet rsProced = null;
-		ResultSet rsParam = null;
+		ResultSet rsParams = null;
 		String name_proced = null;
 		String returnType = "void";
 		Param param = null;
@@ -341,17 +382,17 @@ public abstract class ExtractionMetaDataDB {
 				
 				name_proced = rsProced.getString("PROCEDURE_NAME");
 				plist = new ArrayList<Param>();
-				rsParam = this.metaData.getProcedureColumns(dbname, schema, name_proced, null);
+				rsParams = this.metaData.getProcedureColumns(dbname, schema, name_proced, null);
 				
-				while(rsParam.next()) {
-					if(rsParam.getInt("COLUMN_TYPE") == 5) {
+				while(rsParams.next()) {
+					if(rsParams.getInt("COLUMN_TYPE") == 5) {
 						
-						returnType = rsParam.getString("TYPE_NAME");
+						returnType = rsParams.getString("TYPE_NAME");
 					}
 					else {
-						param = new Param(rsParam.getString("COLUMN_NAME"),
-								rsParam.getInt("COLUMN_TYPE"),
-								rsParam.getString("TYPE_NAME"));
+						param = new Param(rsParams.getString("COLUMN_NAME"),
+								rsParams.getInt("COLUMN_TYPE"),
+								rsParams.getString("TYPE_NAME"));
 						plist.add(param);
 					}
 				}
