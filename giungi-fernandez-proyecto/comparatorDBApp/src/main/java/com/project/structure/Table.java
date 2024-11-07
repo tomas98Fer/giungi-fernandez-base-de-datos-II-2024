@@ -23,6 +23,10 @@ public class Table extends MetaObjectDB  {
 	
 	public Table(String name) {
 		super(name);
+		this.columns = new ArrayList<Column>();
+		this.uniqueKeys = new ArrayList<Index>();
+		this.foreignKeys = new ArrayList<ForeignKey>();
+		this.triggers = new ArrayList<Trigger>();
 	}
 	/**
 	 * 
@@ -134,7 +138,7 @@ public class Table extends MetaObjectDB  {
 			return -1;
 		}
 		for (Column column : this.columns) {
-			if (column.equals(name)) {
+			if (column.getName().equals(name)) {
 				return idx;
 			}
 			idx++;

@@ -2,12 +2,9 @@ package com.project.structure;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import com.project.structure.Event;
-import com.project.structure.MetaObjectDB;
-import com.project.structure.TimeEvent;
-import com.project.structure.Trigger;
 
 public class TriggerTest {
 
