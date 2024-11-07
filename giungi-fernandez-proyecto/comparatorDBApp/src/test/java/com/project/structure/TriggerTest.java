@@ -17,7 +17,7 @@ public class TriggerTest {
 		Event event = Event.UPDATE;
 		Trigger t = new Trigger(triggerName,time,event);
 		
-		assertTrue(t.getName().compareTo(triggerName) == 0 && t.getEvent() == event);
+		assertTrue(t.getName().equals((triggerName)) && t.getEvent() == event);
 	}
 	
 	@Test

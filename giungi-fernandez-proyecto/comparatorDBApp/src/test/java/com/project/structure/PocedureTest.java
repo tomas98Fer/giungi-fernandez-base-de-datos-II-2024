@@ -2,6 +2,7 @@ package com.project.structure;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
@@ -29,7 +30,6 @@ public class PocedureTest {
 		Param p1 = new Param("sideB" , 1 , "void");
 		Param p2 = new Param("sideC", 2 , "int4") ;
 		Param p3 = new Param("Vector", 3 , "int4") ;
-		Param p4 = new Param("Vector", 3 , "varchar") ;
 		Param p5 = new Param("Vector", 1 , "varchar") ;
 		ArrayList<Param> lp1 = new ArrayList<>();
 		ArrayList<Param> lp2 = new ArrayList<>();

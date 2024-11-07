@@ -1,11 +1,12 @@
 package com.project.structure;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 
 /**
- * Unit test for simple App.
+ * Unit test for Column Class.
  */
 
 public class ColumnTest {
@@ -16,7 +17,7 @@ public class ColumnTest {
 		String myName = "numb_costumer";
 		String type = "VARCHAR";
 		Column myColumn = new Column(myName,type);
-		assertTrue(myColumn.getName().compareTo(myName)== 0 && myColumn.getType().compareTo(type)== 0);
+		assertTrue(myColumn.getName().equals(myName) && myColumn.getType().equals(type));
 		
 	}
 	

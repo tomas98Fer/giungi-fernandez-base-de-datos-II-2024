@@ -39,7 +39,7 @@ public class Column extends MetaObjectDB {
 	public boolean equals(Object o) {
 		if(o instanceof Column) {
 			Column c = (Column) o;
-			if(this.getName().compareTo(c.getName()) == 0  && this.getType().compareTo(c.getType())== 0)
+			if(this.getName().equals(c.getName())  && this.getType().equals(c.getType()))
 				return true;
 		}
 	

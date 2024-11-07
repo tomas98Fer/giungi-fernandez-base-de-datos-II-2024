@@ -57,9 +57,9 @@ public class Index extends  MetaObjectDB {
 			if(idx.getColumns().size() != this.columns.size()) 
 				return false;
 			for(int i = 0; i < this.columns.size();i++) {
-				String type_idx = idx.getColumns().get(i).getType();
-				String type_this = this.columns.get(i).getType();
-				if(!type_idx.equals(type_this)) {
+				Column col_idx = idx.getColumns().get(i);
+				Column col_this = this.columns.get(i);
+				if(!col_this.equals(col_idx)) {
 					return false;
 				}
 				
