@@ -15,6 +15,12 @@ import com.project.structure.Table;
 
 public class InfGenerator {
 
+	/**
+	 * 
+	 * @param db1 DB1 represents a model of data base.
+	 * @param db2 DB1 represents a model of data base.
+	 * @param fileName file where  fill it wit difference information.
+	 */
 	public static void findDifferences( DBModel db1, DBModel db2 , String fileName ) {
 		if(db1 == null || db2 == null)
 			throw new IllegalArgumentException("Everyone data base model are null");
@@ -27,24 +33,15 @@ public class InfGenerator {
 			 PrintWriter out = new PrintWriter(bw); )	
 		{
 			
-	
-			// buscar las tablas que matchean por nombre
-			for (Table t1: db1.getTables()) {
-				for(Table t2 : db2.getTables()) {
-					String t1_lc = t1.getName().toLowerCase();
-					String t2_lc = t2.getName().toLowerCase();
-					if(t1_lc.equals(t2_lc)) {
-						treatmentColumns(t1,t2,f);
-					}
-				}
-			}
-			//buscarTablas con el mismo nombre (hacer un buscar por nombre en la clace MDBprocedure)
 			
 			
+			treatmentColumns(db1, db2, f);			
+			AllNameofTableNoMatch(db1 , db2 , f);
+			aditionalTables(db1 , db2 , f);
 			
-			//treatmentColumns(t1 , t2 , f);
+			
 			if(f.length() == 0)
-				out.println("BOTH DATA BASE REPRESENT THE SAAME MODEL.\n askdk\n");
+				out.println("BOTH DATA BASE REPRESENT THE SAME MODEL.\n");
 			
 			bw.close();
 		}
@@ -54,6 +51,32 @@ public class InfGenerator {
 				
 }
 
+	
+	/*
+	 * Compare the table list of the DBmodels.
+	 * Write the file if search difference in columns in a couple Table. 
+	 * Write the file if db1 Model has aditional columns.
+	 * Write the file if db2 Model has aditional columns.
+	 */
+
+	private static void treatmentColumns(DBModel db1, DBModel db2, File f) {
+		// find the tables that their names match
+		for (Table t1: db1.getTables()) {
+			for(Table t2 : db2.getTables()) {
+				String t1_lc = t1.getName().toLowerCase();
+				String t2_lc = t2.getName().toLowerCase();
+				if(t1_lc.equals(t2_lc)) {
+					treatmentColumns(t1,t2,f);
+				}
+			}
+		}
+	}
+
+	/*
+	 * Compare if two table has the same columns.
+	 * if exist some difference write it in the file.
+	 * 
+	 */
 	private static void treatmentColumns(Table t1, Table t2, File f) {
 		int pos = -1;
 		Column auxC1;
@@ -71,13 +94,13 @@ public class InfGenerator {
 			if (pos == -2){
 				throw new IllegalArgumentException("Error in method containsColumnName");
 			}
-			// column is an additional
+			// column is an additional.
 			if(pos == -1) {
 				addColt1.add(t1.getColumns().get(i));
 			}
 			// exist column with the same name in t2.
 			if(pos >= 0 ) {
-				//check if are equals
+				//check if are equals.
 				
 				auxC1 = t1.getColumns().get(i);
 				auxC2 = t2.getColumns().get(pos);
@@ -94,9 +117,9 @@ public class InfGenerator {
 			
 			
 		}
-		// cuando salgo de este siglo obtengo : columnas con mismo nombre ya tratadas y las adicionales de db1
+		// when out of the last loop : The columns with the same name already treatments y and get the aditional of t1.
 		
-		//sacar archivos adicionales de t2
+		//get aditionals columns in t2.
 		for(int i = 0 ; i < t2.getColumns().size() ; i ++) {
 			
 			if( !sameColumns.contains(t2.getColumns().get(i))) {
@@ -104,7 +127,7 @@ public class InfGenerator {
 			}
 			
 		}
-		// printear tablas addicionales para ambas tablas si estas existen.
+		// print aditional tables to both tables weather they have it.
 		
 		description = "ADDITIONAL COLUMN ON TABLE " + t1.getName() + "OF DATABASE 1";
 		writeAdditionalColumns(f,addColt1,description);
@@ -113,24 +136,24 @@ public class InfGenerator {
 		writeAdditionalColumns(f,addColt2,description);
 	}
 
+	// write a list of Columns in the file. 
 	private static void writeAdditionalColumns(File f, ArrayList<Column> columns, String description ){
 			for(Column columnAd : columns){
 				writeColumn(columnAd,f,description);
 			}
 	}
 
+	//write a column in the file.
 	private static void writeColumn(Column c, File f, String description) {
 		try{ FileWriter fw1 = new FileWriter(f , true);
 				BufferedWriter bw1 = new BufferedWriter(fw1);
 				PrintWriter out1 = new PrintWriter(bw1); 
 				out1.println(description);
 				out1.println(c.toString());
-				out1.close();
 				bw1.close();
-				fw1.close();
 		}
 		catch(IOException e) {
-			System.out.println("Error escribiendo en  metodo writeAdditionalTables" + e);
+			System.out.println("Error writing in writeAdditionalTables method " + e);
 		}
 	}
 
@@ -139,43 +162,42 @@ public class InfGenerator {
 		
 		ArrayList<Table> nmtdb1 = noMatchingTables(db1.getTables() , db2.getTables());
 		
-		//hay almenos una tabla que coincide
+		//at least db1 model has one table that matching with someone table in db2 model.
 		if(nmtdb1.size() != db1.getTables().size()) {
 			return false;
 		}
-		String description = "THE TABLES FROM" + db1.getName().toUpperCase() + " NOT MATCHING "
-				+ "WITH TABLES FROM " + db2.getName().toUpperCase() + ".\n" 
-				+ db1.getName().toUpperCase() + " TABLES:\n";
+
+		String description = "NONE OF THE TABLES MATCH:\n" + db1.getName() + ":\n\n";
 		writeTables(f, db1.getTables() , description );
-		description = db2.getName() + " TABLES:\n";
+		description = "NONE OF THE TABLES MATCH:\n" + db2.getName() + ":\n\n";
 		writeTables(f, db2.getTables() , description );
 		
 		return true;
 		
 	}
 
-	//true if this method write in the file
+	//true if this method write in the file.
 	private static boolean aditionalTables(DBModel db1, DBModel db2, File f) {
 		
 		boolean w1 = false;
 		boolean w2 = false;
-		String description = null;
+		String description = "ADITIONAL TABLES IN : ";
 		ArrayList<Table> addtabledb1 = noMatchingTables(db1.getTables() , db2.getTables()); 
-		//almenos una tabla tienen en comun
+		//at least db1 has one table that match with some table in db2.
 		if(addtabledb1.size() < db1.getTables().size() && !addtabledb1.isEmpty()) {
-			description = "ADITIONAL TABLES IN : " + db1.getName().toUpperCase();
-			w1 = writeTables(f , addtabledb1 , description);
+			
+			w1 = writeTables(f , addtabledb1 , description +  db1.getName().toUpperCase());
 		}
 		ArrayList<Table> addtabledb2 = noMatchingTables(db2.getTables() , db1.getTables());
 		if(addtabledb2.size() < db2.getTables().size() && !addtabledb2.isEmpty()) {
-			description = "ADITIONAL TABLES IN: " + db2.getName().toUpperCase();
-			w2 = writeTables(f , addtabledb2 , db2.getName());
+			
+			w2 = writeTables(f , addtabledb2 , description +  db2.getName().toUpperCase());
 		}
 
 		return w1 || w2;
 	}
 	
-	
+	//Write a list of tables in the file.
 	private static boolean writeTables(File f, ArrayList<Table> addTables, String description) {
 		if(addTables.isEmpty())
 			return false;
@@ -197,7 +219,7 @@ public class InfGenerator {
 		return true;
 	}
 
-	// return all tables in tables1 that aren't matching with table names from tables2 
+	// return all tables in tables1 that aren't matching with table names from tables2. 
 	private static ArrayList<Table> noMatchingTables(ArrayList<Table> tables1, ArrayList<Table> tables2) {
 		ArrayList<Table> addTables = new ArrayList<>();
 		String s = null;
