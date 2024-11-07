@@ -2,6 +2,7 @@ CREATE schema testdb2;
 
 set search_path to testdb2;
 
+
 --columna extra
 CREATE TABLE users (			
     user_id SERIAL PRIMARY KEY,
@@ -16,35 +17,35 @@ CREATE TABLE orders (
     user_id INT REFERENCES users(user_id),
     order_date DATE,
     amount FLOAT,
-    status VARCHAR(20),
+    status VARCHAR(20)
 );
 
 --misma tabla
 CREATE TABLE items(
 	item_id int PRIMARY KEY,
-	value float,
+	item_value float,
 	description VARCHAR(100)
-)
+);
 
 
 --trigger distinto disparo
 CREATE TRIGGER set_status_insert
 AFTER INSERT ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_default_status(user_id,order_id);
+EXECUTE FUNCTION set_user_id(user_id);
 
 
 --trigger distinto nombre
 CREATE TRIGGER set_status_after_update
 BEFORE INSERT ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_default_status(user_id,order_id);
+EXECUTE FUNCTION set_default_status(user_id,order_date);
 
 --trigger distinto 	evento
 CREATE TRIGGER set_status_insert
 AFTER INSERT ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_default_status(user_id,order_id);
+EXECUTE FUNCTION set_default_status(user_id,order_date);
 
 --index distinto orden columnas
 CREATE INDEX idx_order_itemid ON items (item_value,item_id);
@@ -52,9 +53,8 @@ CREATE INDEX idx_order_itemid ON items (item_value,item_id);
 --index distinta columna
 CREATE INDEX idx_order ON orders (order_date);
 
-
-
-CREATE FUNCTION set_default_status(user_id_param INT, order_date_param DATE)
+--distinto orden de parametro
+CREATE FUNCTION set_default_status( order_date_param DATE, user_id_param INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
@@ -62,6 +62,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- distinto tipo de retorno
 CREATE FUNCTION set_user_id(user_id_param INT)
 RETURNS INT AS
 $$
