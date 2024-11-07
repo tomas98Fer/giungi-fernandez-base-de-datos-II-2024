@@ -19,7 +19,7 @@ public class InfGenerator {
 	 * 
 	 * @param db1 DB1 represents a model of data base.
 	 * @param db2 DB1 represents a model of data base.
-	 * @param fileName file where  fill it wit difference information.
+	 * @param fileName file where  filling it with difference information.
 	 */
 	public static void findDifferences( DBModel db1, DBModel db2 , String fileName ) {
 		if(db1 == null || db2 == null)
