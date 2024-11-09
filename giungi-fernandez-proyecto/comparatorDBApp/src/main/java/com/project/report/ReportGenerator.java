@@ -69,7 +69,7 @@ public class ReportGenerator {
 				String t2_lc = t2.getName().toLowerCase();
 				if(t1_lc.equals(t2_lc)) {
 					treatmentColumns(t1,t2,f);
-					// treatmentPK(t1,t2,f);
+					treatmentPK(t1,t2,f);
 					treatmentFK(t1,t2,f);
 				}
 			}
@@ -106,6 +106,19 @@ public class ReportGenerator {
 		}
 	}
 
+	private static void writeFK(ForeignKey fk, File f, String description) {
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description);
+			out1.println(fk.toString());
+			bw1.close();
+		}
+		catch(IOException e) {
+			System.out.println("Error writing  writeFK method" + e);
+		}
+	}
 
 	private static boolean isTheSameColumnsList(ArrayList<Column> columns1, ArrayList<Column> columns2) {
 		if (columns1.size() != columns2.size())
