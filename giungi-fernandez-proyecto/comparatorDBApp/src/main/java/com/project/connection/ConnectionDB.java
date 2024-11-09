@@ -77,7 +77,7 @@ public class ConnectionDB {
 		case "mysql" :
 			return "jdbc:mysql://" + this.host +"/" + this.dbname;
 		case "oracle11xe" :
-			return "";
+			return "jdbc:oracle:thin:@//" + this.host +  "/xe";
 	}
 	return "";
 

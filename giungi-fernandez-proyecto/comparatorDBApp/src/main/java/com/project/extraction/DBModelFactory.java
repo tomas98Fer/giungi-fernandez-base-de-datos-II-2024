@@ -29,7 +29,9 @@ public class DBModelFactory {
 		if(c.getEngine().equals("mysql"))
 			extdb = new ExtractionMetaDataMSQLDB(c);
 		
-		//we should add choice to oracle 11xe engine
+		if(c.getEngine().equals("oracle11xe"))
+			extdb = new ExtractionMetaDataOracle11xeDB(c);	
+		
 		ArrayList<Table> l = extdb.extractTables();
 		dbm.setTables(l);
 		dbm.setProcedures(extdb.extractStoredProcedures());

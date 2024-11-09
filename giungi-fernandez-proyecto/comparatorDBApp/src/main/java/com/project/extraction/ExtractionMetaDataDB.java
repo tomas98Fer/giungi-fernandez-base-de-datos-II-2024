@@ -62,8 +62,10 @@ public abstract class ExtractionMetaDataDB {
 	public ArrayList<Table> extractTables() throws SQLException {
 		String catalogName = c.getDatabaseName();
 		String schemaName = c.getSchema();
-		String[] typeTable = {"TABLE"};		
+		String[] typeTable = {"TABLE"};	
+		System.out.println("PREVIO A OBTENER INFORMACION DE LAS TABLAS");
 		ResultSet rsTables = metaData.getTables(catalogName, schemaName, null, typeTable);
+		System.out.println("OBTUVE INFORMACION DE LAS TABLAS");
 		ArrayList<Table> tableList = new ArrayList<Table>();
 		String tableName = null;
 		ArrayList<Column> columns = null;
@@ -116,7 +118,7 @@ public abstract class ExtractionMetaDataDB {
 	 */
 	public ArrayList<Column> extractColumns(String tableName) throws SQLException {	
 		
-		ResultSet rsColumns = metaData.getColumns(c.getDatabaseName() , c.getSchema() , tableName , null);
+		ResultSet rsColumns = metaData.getColumns(c.getDatabaseName() , c.getSchema(), tableName , null);
 		ArrayList<Column> columnList = new ArrayList<Column>();
 		String nameC = null;
 		String typeC = null;
@@ -144,15 +146,10 @@ public abstract class ExtractionMetaDataDB {
 		String namePK = null;
 		Column c;
 		String nameC;
-		if(!rsColumnsPK.next()) {
-			return null;
-		}
-		else {
-			rsColumnsPK.previous();
-		}
+		boolean existPK = false;
 		while(rsColumnsPK.next()) {
-			if(namePK == null)
-				namePK = rsColumnsPK.getString("PK_NAME");
+			existPK = true;
+			namePK = rsColumnsPK.getString("PK_NAME");
 			
 			nameC = rsColumnsPK.getString("COLUMN_NAME");
 			
@@ -161,8 +158,9 @@ public abstract class ExtractionMetaDataDB {
 				columnPKList.add(c);
 			
 		}
-		return new Index(namePK,columnPKList);
-		
+		if(existPK)
+			return new Index(namePK,columnPKList);
+		return null;
 	}
 	
 	/**
@@ -173,14 +171,9 @@ public abstract class ExtractionMetaDataDB {
 	 */
 	public ArrayList<ForeignKey> extractForeignsKeys( String tableName, ArrayList<Table> tableList) throws SQLException {
 		ResultSet rsFKs = metaData.getImportedKeys(c.getDatabaseName() , c.getSchema() , tableName);
-		if(!rsFKs.next()) {
-			return null;
-		}
-		rsFKs.previous(); 	//back pointer to the begin.
-		
 		ArrayList<ForeignKey> fks = new ArrayList<>();
 		String oldFKname = "";
-		String  currentFKname= "";
+		String  currentFKname = "";
 		Table t = getTable(tableName,tableList); 
 		Table refTable = null;
 		ForeignKey currentFK = null;
@@ -229,20 +222,19 @@ public abstract class ExtractionMetaDataDB {
 		String columnName = "";
 		Column c = null;
 		Index idx = null;
-		if(!rsUniqueKeys.next())
-			return null;
-		rsUniqueKeys.previous();
 		while(rsUniqueKeys.next()) {
 			
 			currentUniqueKeyName = rsUniqueKeys.getString("INDEX_NAME");
-			if(!currentUniqueKeyName.equals(oldUniqueKeyName)) {
-				oldUniqueKeyName = currentUniqueKeyName;
-				idx = new Index(currentUniqueKeyName);
-				uniqueKeysList.add(idx);
+			if(currentUniqueKeyName != null) {
+				if(!currentUniqueKeyName.equals(oldUniqueKeyName)) {
+					oldUniqueKeyName = currentUniqueKeyName;
+					idx = new Index(currentUniqueKeyName);
+					uniqueKeysList.add(idx);
+				}
+				columnName = rsUniqueKeys.getString("COLUMN_NAME");
+				c = getColumn(columnName,columnsTable);
+				idx.getColumns().add(c);
 			}
-			columnName = rsUniqueKeys.getString("COLUMN_NAME");
-			c = getColumn(columnName,columnsTable);
-			idx.getColumns().add(c);
 		}
 		
 		return uniqueKeysList;
@@ -263,20 +255,20 @@ public abstract class ExtractionMetaDataDB {
 		String columnName = "";
 		Column c = null;
 		Index idx = null;
-		if(!rsIndexes.next())
-			return null;
-		rsIndexes.previous();
+
 		while(rsIndexes.next()) {
 			currentIndexName = rsIndexes.getString("INDEX_NAME");
-			if(rsIndexes.getBoolean("NON_UNIQUE")) {
-				if(!currentIndexName.equals(oldIndexName)) {
-					oldIndexName = currentIndexName;
-					idx = new Index(currentIndexName);
-					indexesList.add(idx);
+			if(currentIndexName != null) {
+				if(rsIndexes.getBoolean("NON_UNIQUE")) {
+					if(!currentIndexName.equals(oldIndexName)) {
+						oldIndexName = currentIndexName;
+						idx = new Index(currentIndexName);
+						indexesList.add(idx);
+					}
+					columnName = rsIndexes.getString("COLUMN_NAME");
+					c = getColumn(columnName,columnsTable);
+					idx.getColumns().add(c);
 				}
-				columnName = rsIndexes.getString("COLUMN_NAME");
-				c = getColumn(columnName,columnsTable);
-				idx.getColumns().add(c);
 			}
 		
 		}

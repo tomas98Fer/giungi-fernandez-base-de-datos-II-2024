@@ -26,6 +26,11 @@ public class MetaObjectDB {
 		return this.name;
 	}
 	
+	public void setName(String name) {
+		if( name == null || name.isEmpty() ) throw new IllegalArgumentException("Name Canot be null or empty");
+		this.name = name;
+	}
+	
 	@Override
 	public String toString() {
 		
