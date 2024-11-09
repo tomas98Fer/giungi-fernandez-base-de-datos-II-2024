@@ -1,4 +1,4 @@
-package com.project.infGenerator;
+package com.project.report;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,7 +13,7 @@ import com.project.structure.Table;
 
 
 
-public class InfGenerator {
+public class ReportGenerator {
 
 	/**
 	 * 

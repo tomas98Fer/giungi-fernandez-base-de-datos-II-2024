@@ -19,7 +19,6 @@
   </properties>
 
   <dependencies>
-    <!-- Dependencia para las anotaciones y clases de JUnit 5 -->
    <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
@@ -105,7 +104,6 @@
           <version>3.6.1</version>
         </plugin>
 		
-        <!-- Plugin para ejecutar la aplicación -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
