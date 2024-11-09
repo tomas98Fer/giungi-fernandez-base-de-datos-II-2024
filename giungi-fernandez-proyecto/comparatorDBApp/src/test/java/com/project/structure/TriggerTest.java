@@ -8,36 +8,66 @@ import org.junit.jupiter.api.Test;
 
 public class TriggerTest {
 
-	/*A Trigger has a name and an event. an event can be: UPDATE,INSERT,DELETE,TRUNCATE*/
+	/*
+	 * A Trigger has a name and an timeevent. an actionsevent.
+	 * */
 	
-	@Test
-	public void triggerHasANameATimeAndAnEvent() {
-		String triggerName = "incre_trigg";
-		TimeEvent time = TimeEvent.AFTER;
-		Event event = Event.UPDATE;
-		Trigger t = new Trigger(triggerName,time,event);
-		
-		assertTrue(t.getName().equals((triggerName)) && t.getEvent() == event);
+	 @Test
+	 public void triggerHasANameATimeAndAnEvent() {
+		String name = "incre_trigg";
+		String time = "AFTER";
+		String event = "INSERT";
+		Trigger t = new Trigger("incre_trigg" ,"AFTER" , "INSERT" );
+		boolean result = true;
+		result = result && t.getName().equals(name);
+		result = result && t.getTime().equals(time);
+		result = result && t.getEvent().equals(event);
+		assertTrue(result);
 	}
-	
-	@Test
-	public void equalTriggers() {
-		
-		MetaObjectDB t1 = new Trigger("incre_trig" , TimeEvent.AFTER , Event.INSERT);
-		MetaObjectDB t2 = new Trigger("incre_trig", TimeEvent.AFTER , Event.INSERT);
-		
-		assertTrue(t1.equals(t2));
+	 /*
+	  *Two triggers are equals if _
+	  *both has the same name,
+	  *both has the same time event and
+	  *both has the same actions event.  
+	  */
+	 @Test
+	 public void equalTriggers() {
+		Trigger t = new Trigger("incre_trigg" ,"AFTER" , "INSERT" );
+		Trigger t1 = new Trigger("incre_trigg" ,"AFTER" , "INSERT" );
+		assertTrue(t.equals(t1));
 			
 	}
 	
-	@Test
-	public void notequalTriggers() {
+	 @Test
+	 public void notequalTriggersDiffActionEvent() {
 		
-		MetaObjectDB t1 = new Trigger("incre_trig" , TimeEvent.BEFORE , Event.INSERT);
-		MetaObjectDB t2 = new Trigger("incre_trig", TimeEvent.AFTER , Event.INSERT);
+		Trigger t = new Trigger("incre_trigg" ,"AFTER" , "INSERT" );
+		Trigger t1 = new Trigger("incre_trigg" ,"AFTER" , "UPDATE" );
 		
-		assertFalse(t1.equals(t2));
+		assertFalse(t.equals(t1));
 			
 	}
-	
+
+	 @Test
+	 public void notequalTriggersDiffTimeEvent() {
+		
+		Trigger t = new Trigger("incre_trigg" ,"AFTER" , "INSERT" );
+		Trigger t1 = new Trigger("incre_trigg" ,"BEFORE" , "INSERT" );
+		
+		assertFalse(t.equals(t1));
+			
+	}
+	 
+	 @Test
+	 public void notequalTriggersDiffName() {
+		
+		Trigger t = new Trigger("incre_trigg" ,"AFTER" , "INSERT" );
+		Trigger t1 = new Trigger("decre_trigg" ,"AFTER" , "INSERT" );
+		
+		assertFalse(t.equals(t1));
+			
+	}
+
+
+
 }
