@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import com.project.structure.DBModel;
+import com.project.structure.ForeignKey;
 import com.project.structure.Index;
 import com.project.structure.Table;
 import com.project.report.ReportGenerator;
@@ -265,6 +266,158 @@ public void difrentBasicModelDBTest() {
 		db1.setTables(tblist1);
 		ReportGenerator.findDifferences(db , db1 , "file_test/test6.txt");
 	
+	}
+
+	@Test
+	public void sameTableDiffForeignKeyTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+		ArrayList<Column> fkreflist0 = new ArrayList<Column>();
+		fkreflist0.add(c0);
+		fkreflist0.add(c1);
+		ArrayList<Column> fkreflist1 = new ArrayList<Column>();
+		fkreflist1.add(c0);
+		fkreflist1.add(c3);
+		
+		ForeignKey fk = new ForeignKey("fk_persona1" , fkreflist0 , t0);
+		ForeignKey fk1 = new ForeignKey("fk_persona2" , fkreflist1 , t1);
+		
+		ArrayList<ForeignKey> fklist0 = new ArrayList<ForeignKey>();
+		fklist0.add(fk);
+		ArrayList<ForeignKey> fklist1 = new ArrayList<ForeignKey>();
+		fklist1.add(fk1);
+		t0.setForeignKeys(fklist0);
+		t1.setForeignKeys(fklist1);
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+	
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffFKColumns.txt");
+	}
+
+
+	@Test
+	public void sameTableSameForeignKeyTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+		ArrayList<Column> fkreflist0 = new ArrayList<Column>();
+		fkreflist0.add(c1);
+		fkreflist0.add(c0);
+		ArrayList<Column> fkreflist1 = new ArrayList<Column>();
+		fkreflist1.add(c1);
+		fkreflist1.add(c0);
+		
+		ForeignKey fk = new ForeignKey("fk_persona1" , fkreflist0 , t0);
+		ForeignKey fk1 = new ForeignKey("fk_persona2" , fkreflist1 , t1);
+
+		ArrayList<ForeignKey> fklist0 = new ArrayList<ForeignKey>();
+		fklist0.add(fk);
+		ArrayList<ForeignKey> fklist1 = new ArrayList<ForeignKey>();
+		fklist1.add(fk1);
+		t0.setForeignKeys(fklist0);
+		t1.setForeignKeys(fklist1);
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+	
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffFKColumns.txt");
+	}
+
+	@Test
+	public void diffTableReferenceForeignKeyTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Table t2 = new Table("Gerente");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+		ArrayList<Column> collist2 = new ArrayList<Column>();
+		collist2.add(c0);
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+		t2.setColumns(collist2);
+		ArrayList<Column> fkreflist0 = new ArrayList<Column>();
+		fkreflist0.add(c1);
+		fkreflist0.add(c0);
+		ArrayList<Column> fkreflist1 = new ArrayList<Column>();
+		fkreflist1.add(c1);
+		fkreflist1.add(c0);
+		
+		ForeignKey fk = new ForeignKey("fk_persona1" , fkreflist0 , t0);
+		ForeignKey fk1 = new ForeignKey("fk_persona2" , fkreflist1 , t2);
+
+		ArrayList<ForeignKey> fklist0 = new ArrayList<ForeignKey>();
+		fklist0.add(fk);
+		ArrayList<ForeignKey> fklist1 = new ArrayList<ForeignKey>();
+		fklist1.add(fk1);
+		t0.setForeignKeys(fklist0);
+		t1.setForeignKeys(fklist1);
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+	
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffFKColumns.txt");
 	}
 
 }

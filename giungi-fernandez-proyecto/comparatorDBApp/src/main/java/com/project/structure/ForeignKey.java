@@ -7,6 +7,7 @@ public class ForeignKey extends Index{
 	private Table reference;
 	//columns has reference foreign key
 	private ArrayList<Column> referencedColumns;
+	
 	public ForeignKey(String name) {
 		super(name);
 		this.referencedColumns = new ArrayList<Column>();
@@ -15,10 +16,10 @@ public class ForeignKey extends Index{
 	
 	
 	
-	ForeignKey(String name, ArrayList<Column> l,Table reference ) {
+	public ForeignKey(String name, ArrayList<Column> l,Table reference ) {
 		super(name,l);
 		this.reference = reference;
-		
+		referencedColumns= l;
 	}
 	
 	/**
@@ -68,7 +69,7 @@ public class ForeignKey extends Index{
 		if( o instanceof ForeignKey) {
 			ForeignKey f = (ForeignKey) o;			
 			
-			if(f.getReference().equals(this.reference)) {
+			if(f.getReference().getName().equals(this.reference.getName())) {
 				
 				if(f.getColumns().size() == this.getColumns().size() && f.getReferencedColumns().size() == this.referencedColumns.size()) {
 					String type_fk1 = null;
@@ -84,10 +85,14 @@ public class ForeignKey extends Index{
 					//check if referenced columns
 					type_fk1 = null;
 					type_fk2 = null;
+					String name_fk1 = null;
+					String name_fk2 = null;
 					for(int i = 0 ; i < f.getReferencedColumns().size() ; i++) {
 						type_fk1 = this.referencedColumns.get(i).getType();
 						type_fk2 = f.getColumns().get(i).getType();
-						if(!type_fk1.equals(type_fk2))
+						name_fk1 = this.referencedColumns.get(i).getName();
+						name_fk2 = f.getColumns().get(i).getName();
+						if(!type_fk1.equals(type_fk2) || !name_fk1.equals(name_fk2))
 							return false;
 					}
 					return true;
@@ -97,6 +102,7 @@ public class ForeignKey extends Index{
 			}
 		
 		}
+		System.out.println("Foreign key not equals");
 		return false;
 	}
 	

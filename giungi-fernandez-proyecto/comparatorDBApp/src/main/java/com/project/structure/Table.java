@@ -190,7 +190,7 @@ public class Table extends MetaObjectDB  {
 		return res;
 	}
 	
-	//string primary key
+	//string foreign key
 	private String toStringFKs() {
 		if(this.foreignKeys == null)
 			return "FOREIGN KEY: The table hasn't FOREIGN KEYS.\n";
