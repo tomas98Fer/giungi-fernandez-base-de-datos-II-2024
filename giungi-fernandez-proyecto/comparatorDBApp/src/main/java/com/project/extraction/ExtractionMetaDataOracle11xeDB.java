@@ -30,8 +30,8 @@ public class ExtractionMetaDataOracle11xeDB extends ExtractionMetaDataDB {
 		ArrayList<Trigger> trgList = new ArrayList<>();
 		Trigger t = null;
 		String query = "SELECT TRIGGER_NAME,TRIGGER_TYPE,TRIGGERING_EVENT "
-				+ "FROM USER_TRIGGERS "
-				+ "WHERE TABLE_NAME = " + "'" + tableName + "';";
+				+ "FROM DBA_TRIGGERS "
+				+ "WHERE TABLE_NAME = " + "'" + tableName + "'";
 		Statement s = this.getConnectionDB().getConnection().createStatement();
 		ResultSet rs = s.executeQuery(query);
 		while(rs.next()) {

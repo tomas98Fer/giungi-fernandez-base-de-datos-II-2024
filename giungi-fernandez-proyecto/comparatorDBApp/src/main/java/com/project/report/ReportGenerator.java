@@ -35,9 +35,10 @@ public class ReportGenerator {
 			
 			
 			
-			treatmentColumns(db1, db2, f);			
-			AllNameofTableNoMatch(db1 , db2 , f);
 			aditionalTables(db1 , db2 , f);
+			AllNameofTableNoMatch(db1 , db2 , f);
+			treatmentTables(db1, db2, f);
+	
 			
 			
 			if(f.length() == 0)
@@ -59,7 +60,7 @@ public class ReportGenerator {
 	 * Write the file if db2 Model has aditional columns.
 	 */
 
-	private static void treatmentColumns(DBModel db1, DBModel db2, File f) {
+	private static void treatmentTables(DBModel db1, DBModel db2, File f) {
 		// find the tables that their names match
 		for (Table t1: db1.getTables()) {
 			for(Table t2 : db2.getTables()) {
@@ -67,10 +68,49 @@ public class ReportGenerator {
 				String t2_lc = t2.getName().toLowerCase();
 				if(t1_lc.equals(t2_lc)) {
 					treatmentColumns(t1,t2,f);
+					treatmentPK(t1,t2,f);
+					
 				}
 			}
 		}
 	}
+
+	private static void treatmentPK(Table t1, Table t2, File f) {
+		ArrayList<Column> pkColumnst1 = t1.getPrimaryKey().getColumns();
+		ArrayList<Column> pkColumnst2 = t2.getPrimaryKey().getColumns();
+		String description = "";
+		if(pkColumnst1.size() == pkColumnst2.size()) {
+			for(int i = 0 ; i < pkColumnst1.size() ; i++) {
+				if(!pkColumnst1.get(i).equals(pkColumnst2.get(i))) {
+					description = "PRIMARY KEY IN DATA BASE 1";
+					writePK(t1,f, description);
+					description = "PRIMARY KEY IN DATA BASE 2";
+					writePK(t2 , f , description);
+				}
+			}
+		}
+		
+	}
+
+	//
+	private static void writePK(Table t, File f, String description) {
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description);
+			for(Column c : t.getColumns()) {
+				 out1.println(c.toString());
+				
+			}
+			bw1.close();
+		}
+		catch(IOException e) {
+			System.out.println("Error writing  writePK method" + e);
+		}
+		
+	}
+
 
 	/*
 	 * Compare if two table has the same columns.
