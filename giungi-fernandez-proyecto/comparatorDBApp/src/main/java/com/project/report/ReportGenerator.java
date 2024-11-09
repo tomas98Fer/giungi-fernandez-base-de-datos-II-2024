@@ -34,11 +34,11 @@ public class ReportGenerator {
 		{
 			
 			
-			
-			aditionalTables(db1 , db2 , f);
 			AllNameofTableNoMatch(db1 , db2 , f);
-			treatmentTables(db1, db2, f);
-	
+			if(f.length() == 0) {
+				aditionalTables(db1 , db2 , f);
+				treatmentTables(db1, db2, f);
+			}
 			
 			
 			if(f.length() == 0)
@@ -82,15 +82,36 @@ public class ReportGenerator {
 		if(pkColumnst1.size() == pkColumnst2.size()) {
 			for(int i = 0 ; i < pkColumnst1.size() ; i++) {
 				if(!pkColumnst1.get(i).equals(pkColumnst2.get(i))) {
-					description = "PRIMARY KEY IN DATA BASE 1";
+					description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName() + "\n";
 					writePK(t1,f, description);
-					description = "PRIMARY KEY IN DATA BASE 2";
+					description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName() + "\n";
 					writePK(t2 , f , description);
 				}
 			}
 		}
+		else {
+			description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName() + "\n";
+			writePK(t1,f, description);
+			description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName() + "\n";
+			writePK(t2 , f , description);
+		}
 		
 	}
+
+	private static void writefile(File f, String description) {
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description);
+			bw1.close();
+		}
+		catch(IOException e) {
+			System.out.println("Error writing  writefile method" + e);
+		}
+		
+	}
+
 
 	//
 	private static void writePK(Table t, File f, String description) {
@@ -99,7 +120,7 @@ public class ReportGenerator {
 				 PrintWriter out1 = new PrintWriter(bw1); )	
 		{
 			out1.println(description);
-			for(Column c : t.getColumns()) {
+			for(Column c : t.getPrimaryKey().getColumns()) {
 				 out1.println(c.toString());
 				
 			}
@@ -148,8 +169,8 @@ public class ReportGenerator {
 				
 				if(!auxC1.equals(auxC2)) {
 					description = "SAME COLUMN NAME BUT DIFFERENT TYPE";
-					writeColumn(auxC1, f , description + "IN DB1");
-					writeColumn(auxC2, f ,  description + "IN DB2");
+					writeColumn(auxC1, f , description + " IN THE TABLE: " + t1.getName() + "\n" );
+					writeColumn(auxC2, f ,  description + "IN THE TABLE: " + t1.getName() + "\n" );
 				}
 				//if they aren't dont should print the column.
 				
@@ -169,10 +190,10 @@ public class ReportGenerator {
 		}
 		// print aditional tables to both tables weather they have it.
 		
-		description = "ADDITIONAL COLUMN ON TABLE " + t1.getName() + "OF DATABASE 1";
+		description = "ADDITIONAL COLUMNS ON TABLE " + t1.getName() + " OF DATABASE 1";
 		writeAdditionalColumns(f,addColt1,description);
 		
-		description = "ADDITIONAL COLUMN ON TABLE " + t2.getName() + "OF DATABASE 2";
+		description = "ADDITIONALS COLUMN ON TABLE " + t2.getName() + " OF DATABASE 2";
 		writeAdditionalColumns(f,addColt2,description);
 	}
 
@@ -198,21 +219,39 @@ public class ReportGenerator {
 	}
 
 	//true if this method write in file
-	private static boolean AllNameofTableNoMatch(DBModel db1, DBModel db2, File f) {
+	private static void AllNameofTableNoMatch(DBModel db1, DBModel db2, File f) {
+		String description = "";
+		if(db1.getTables().isEmpty() && !db2.getTables().isEmpty()) {
+			description = "DATABASE MODEL : " + db1.getName() + " DON'T HAS TABLES.";
+			writefile(f, description);
+			description = "TABLES IN DATABASE MODEL : " + db2.getName() ;
+			writeTables(f , db2.getTables() , description);
+			return;
+		}
+		if(!db1.getTables().isEmpty() && db2.getTables().isEmpty()) {
+			description = "DATABASE MODEL : " + db2.getName() + " DON'T HAS TABLES.";
+			writefile(f, description);
+			description = "TABLES IN DATABASE MODEL : " + db1.getName() ;
+			writeTables(f , db1.getTables() , description);
+			return;
+		}
+		if(db1.getTables().isEmpty() && db2.getTables().isEmpty()) {
+			description = "THE DATABASE MODELS  DON'T HAVE TABLES. THEY ARE EMPTY.";
+			writefile(f, description);
+			return;
+		}
 		
 		ArrayList<Table> nmtdb1 = noMatchingTables(db1.getTables() , db2.getTables());
 		
 		//at least db1 model has one table that matching with someone table in db2 model.
 		if(nmtdb1.size() != db1.getTables().size()) {
-			return false;
+			return;
 		}
-
-		String description = "NONE OF THE TABLES MATCH:\n" + db1.getName() + ":\n\n";
-		writeTables(f, db1.getTables() , description );
-		description = "NONE OF THE TABLES MATCH:\n" + db2.getName() + ":\n\n";
-		writeTables(f, db2.getTables() , description );
+		description = "ALL TABLES IN EACH DATABASE MODEL ARE DIFFERENT.\n" ;
+		writeTables(f, db1.getTables() , description + "TABLES FROM: " + db1.getName() + "\n" );
+		writeTables(f, db2.getTables() , description + "TABLES FROM: " + db2.getName() + "\n");
 		
-		return true;
+		return;
 		
 	}
 
