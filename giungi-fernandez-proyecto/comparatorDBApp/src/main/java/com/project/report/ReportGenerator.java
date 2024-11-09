@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import com.project.structure.Column;
 import com.project.structure.DBModel;
+import com.project.structure.ForeignKey;
 import com.project.structure.Table;
 
 
@@ -68,26 +69,82 @@ public class ReportGenerator {
 				String t2_lc = t2.getName().toLowerCase();
 				if(t1_lc.equals(t2_lc)) {
 					treatmentColumns(t1,t2,f);
-					treatmentPK(t1,t2,f);
-					
+					// treatmentPK(t1,t2,f);
+					treatmentFK(t1,t2,f);
 				}
 			}
 		}
 	}
-
-	private static void treatmentPK(Table t1, Table t2, File f) {
-		ArrayList<Column> pkColumnst1 = t1.getPrimaryKey().getColumns();
-		ArrayList<Column> pkColumnst2 = t2.getPrimaryKey().getColumns();
-		String description = "";
-		if(pkColumnst1.size() == pkColumnst2.size()) {
-			for(int i = 0 ; i < pkColumnst1.size() ; i++) {
-				if(!pkColumnst1.get(i).equals(pkColumnst2.get(i))) {
-					description = "PRIMARY KEY IN DATA BASE 1";
-					writePK(t1,f, description);
-					description = "PRIMARY KEY IN DATA BASE 2";
-					writePK(t2 , f , description);
+					
+	private static void treatmentFK(Table t1, Table t2, File f) {
+		String t1Name = t1.getName();
+		String t2Name = t2.getName();
+		ArrayList<ForeignKey> fkColumnst1 = t1.getForeignKeys();
+		ArrayList<ForeignKey> fkColumnst2 = t2.getForeignKeys();
+		int i = 0;
+		while (i<fkColumnst1.size()) {
+			ForeignKey fk1 = fkColumnst1.get(i);
+			for(ForeignKey fk2 : fkColumnst2) {
+				if(fk1.equals(fk2)) {
+					fkColumnst1.remove(fk1);
+					fkColumnst2.remove(fk2);
+					break;
 				}
 			}
+			i++;
+		}
+
+		if(!fkColumnst1.isEmpty()) {
+			for(ForeignKey fk : fkColumnst1) {
+				writeFK(fk, f, "EXTRA FOREIGN KEY IN TABLE " + t1Name + " OF DATABASE 1");
+			}
+		}
+		if(!fkColumnst2.isEmpty()) {
+			for(ForeignKey fk : fkColumnst2) {
+				writeFK(fk, f, "EXTRA FOREIGN KEY IN TABLE " + t2Name + " OF DATABASE 2");
+			}
+		}
+	}
+
+	private static boolean isTheSameColumnsList(ArrayList<Column> columns1, ArrayList<Column> columns2) {
+		if (columns1.size() != columns2.size())
+			return false;
+			
+		for (Column c1 : columns1) {
+			if (!columns2.contains(c1)) {
+				return false;
+			}
+		}
+		return true;
+	}			
+				
+	// private static void treatmentPK(Table t1, Table t2, File f) {
+	// 	ArrayList<Column> pkColumnst1 = t1.getPrimaryKey().getColumns();
+	// 	ArrayList<Column> pkColumnst2 = t2.getPrimaryKey().getColumns();
+	// 	String description = "";
+	// 	if(pkColumnst1.size() == pkColumnst2.size()) {
+	// 		for(int i = 0 ; i < pkColumnst1.size() ; i++) {
+	// 			if(!pkColumnst1.get(i).equals(pkColumnst2.get(i))) {
+	// 				description = "PRIMARY KEY IN DATA BASE 1";
+	// 				writePK(t1,f, description);
+	// 				description = "PRIMARY KEY IN DATA BASE 2";
+	// 				writePK(t2 , f , description);
+	// 			}
+	// 		}
+	// 	}
+		
+	// }
+
+	private static void writeFK(ForeignKey fk, File f, String description) {
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description + "\n" +fk.toString());
+			bw1.close();
+		}
+		catch(IOException e) {
+			System.out.println("Error writing  writeFK method" + e);
 		}
 		
 	}
@@ -276,7 +333,6 @@ public class ReportGenerator {
 	}
 
 	private static boolean thisNameIsIn(String s, ArrayList<Table> tables) {
-		
 		for(Table t : tables) {
 			if( t.getName().equals(s))
 				return true;
