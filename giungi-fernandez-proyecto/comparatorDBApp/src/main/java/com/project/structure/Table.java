@@ -157,7 +157,7 @@ public class Table extends MetaObjectDB  {
 		result += toStringUKs();
 		result += toStringIdx();
 		result += toStringTrg();
-		result += "\n\nEnd  Table Iformation.\n";
+		result += "____________________________________________________\n";
 		return  result;
 		
 	}
@@ -219,7 +219,7 @@ public class Table extends MetaObjectDB  {
 	// string indexes
 	private String toStringIdx() {
 		if(this.indexes == null || this.indexes.size() == 0)
-			return "NO HAY INDICES\n";
+			return "THERE ARE NOT INDEXES\n";
 		
 		String res = "INDEX: \n";
 		for(Index uk : this.indexes) {
@@ -232,7 +232,7 @@ public class Table extends MetaObjectDB  {
 	//string triggers
 	private String toStringTrg() {
 		if(this.triggers == null || this.triggers.isEmpty())
-			return "Don't have triggers. \n";
+			return "THERE ARE NOT TRIGGERS. \n";
 		String res = "TRIGGERS \n";
 		for(Trigger t : this.triggers) {
 			res += t.toString();
