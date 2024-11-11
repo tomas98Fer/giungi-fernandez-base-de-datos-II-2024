@@ -62,7 +62,6 @@ public class Index extends  MetaObjectDB {
 				if(!col_this.equals(col_idx)) {
 					return false;
 				}
-				
 			}
 			return true;
 		}

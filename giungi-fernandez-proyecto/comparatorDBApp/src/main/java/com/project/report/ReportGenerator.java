@@ -11,9 +11,9 @@ import com.project.structure.Column;
 import com.project.structure.DBModel;
 import com.project.structure.ForeignKey;
 import com.project.structure.Procedure;
+import com.project.structure.Index;
 import com.project.structure.Table;
-
-
+import java.util.function.Function;
 
 public class ReportGenerator {
 
@@ -41,7 +41,7 @@ public class ReportGenerator {
 				aditionalTables(db1 , db2 , f);
 				treatmentTables(db1, db2, f);
 			}
-			
+			treatmentProcedures(db1, db2 , f);
 			
 			if(f.length() == 0)
 				out.println("BOTH DATA BASE REPRESENT THE SAME MODEL.\n");
@@ -71,69 +71,63 @@ public class ReportGenerator {
 				if(t1_lc.equals(t2_lc)) {
 					treatmentColumns(t1,t2,f);
 					treatmentPK(t1,t2,f);
-					treatmentFK(t1,t2,f);
+					treatmentRepeatedObjInTables(t1,t2,f,Table::getForeignKeys,"FOREING KEY");
+					treatmentRepeatedObjInTables(t1,t2,f,Table::getIndexes,"INDEX");
+					treatmentRepeatedObjInTables(t1,t2,f,Table::getUniqueKeys,"UNIQUE KEY");
+					treatmentRepeatedObjInTables(t1,t2,f,Table::getTriggers,"TRIGGER");
 				}
 			}
 		}
 	}
-					
-	private static void treatmentFK(Table t1, Table t2, File f) {
-		String t1Name = t1.getName();
-		String t2Name = t2.getName();
-		ArrayList<ForeignKey> fkColumnst1 = t1.getForeignKeys();
-		ArrayList<ForeignKey> fkColumnst2 = t2.getForeignKeys();
+
+	private static <T> void treatmentRepeatedObjInTables(Table t1, Table t2, File f, Function<Table, ArrayList<T>> function, String type) {
+		ArrayList<T> objColumns1 = function.apply(t1);
+		ArrayList<T> objColumns2 = function.apply(t2);
+		
+		if (objColumns1 == null || objColumns2 == null || objColumns1.isEmpty() || objColumns2.isEmpty()) {
+			return;
+		}
+
+		objColumns1 = cloneList(objColumns1);
+		objColumns2 = cloneList(objColumns2);
+		// Lógica para eliminar elementos coincidentes de ambas listas sin perder índice
 		int i = 0;
-		while (i<fkColumnst1.size()) {
-			ForeignKey fk1 = fkColumnst1.get(i);
-			for(ForeignKey fk2 : fkColumnst2) {
-				if(fk1.equals(fk2)) {
-					fkColumnst1.remove(fk1);
-					fkColumnst2.remove(fk2);
+		while (i < objColumns1.size()) {
+			T o1 = objColumns1.get(i);
+			boolean removed = false;
+			for (T o2 : objColumns2) {
+				if (o1.equals(o2)) {
+					objColumns1.remove(o1);
+					objColumns2.remove(o2);
+					removed = true;
 					break;
 				}
 			}
-			i++;
-		}
-
-		if(!fkColumnst1.isEmpty()) {
-			for(ForeignKey fk : fkColumnst1) {
-				writeFK(fk, f, "EXTRA FOREIGN KEY IN TABLE " + t1Name + " OF DATABASE 1");
+			if (!removed) {
+				i++;
 			}
 		}
-		if(!fkColumnst2.isEmpty()) {
-			for(ForeignKey fk : fkColumnst2) {
-				writeFK(fk, f, "EXTRA FOREIGN KEY IN TABLE " + t2Name + " OF DATABASE 2");
+		
+		if (!objColumns1.isEmpty()) {
+			for (T o1 : objColumns1) {
+				writeObject(o1, f, "EXTRA " + type + " IN TABLE " + t1.getName() + " OF DATABASE 1");
+			}
+		}
+		if (!objColumns2.isEmpty()) {
+			for (T o2 : objColumns2) { 
+				writeObject(o2, f, "EXTRA " + type + " IN TABLE " + t2.getName() + " OF DATABASE 2");
 			}
 		}
 	}
-
-	private static void writeFK(ForeignKey fk, File f, String description) {
-		try( FileWriter fw1 = new FileWriter(f , true);
-				 BufferedWriter bw1 = new BufferedWriter(fw1);
-				 PrintWriter out1 = new PrintWriter(bw1); )	
-		{
-			out1.println(description);
-			out1.println(fk.toString());
-			bw1.close();
-		}
-		catch(IOException e) {
-			System.out.println("Error writing  writeFK method" + e);
-		}
-	}
-
-	private static boolean isTheSameColumnsList(ArrayList<Column> columns1, ArrayList<Column> columns2) {
-		if (columns1.size() != columns2.size())
-			return false;
-			
-		for (Column c1 : columns1) {
-			if (!columns2.contains(c1)) {
-				return false;
-			}
-		}
-		return true;
-	}			
+	
 
 	private static void treatmentPK(Table t1, Table t2, File f) {
+		Index pk1 = t1.getPrimaryKey();
+		Index pk2 = t2.getPrimaryKey();
+		if (pk1 == null || pk2 == null)
+			return;
+		if (pk1.getColumns() == null || pk2.getColumns() == null)
+			return;
 		ArrayList<Column> pkColumnst1 = t1.getPrimaryKey().getColumns();
 		ArrayList<Column> pkColumnst2 = t2.getPrimaryKey().getColumns();
 		String description = "";
@@ -141,17 +135,17 @@ public class ReportGenerator {
 			for(int i = 0 ; i < pkColumnst1.size() ; i++) {
 				if(!pkColumnst1.get(i).equals(pkColumnst2.get(i))) {
 					description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName() + "\n";
-					writePK(t1,f, description);
+					writeObject(t1,f, description);
 					description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName() + "\n";
-					writePK(t2 , f , description);
+					writeObject(t2 , f , description);
 				}
 			}
 		}
 		else {
 			description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName() + "\n";
-			writePK(t1,f, description);
+			writeObject(t1,f, description);
 			description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName() + "\n";
-			writePK(t2 , f , description);
+			writeObject(t2 , f , description);
 		}
 		
 	}
@@ -171,26 +165,12 @@ public class ReportGenerator {
 	}
 
 
-	//
-	private static void writePK(Table t, File f, String description) {
-		try( FileWriter fw1 = new FileWriter(f , true);
-				 BufferedWriter bw1 = new BufferedWriter(fw1);
-				 PrintWriter out1 = new PrintWriter(bw1); )	
-		{
-			out1.println(description);
-			for(Column c : t.getPrimaryKey().getColumns()) {
-				 out1.println(c.toString());
-				
-			}
-			bw1.close();
-		}
-		catch(IOException e) {
-			System.out.println("Error writing  writePK method" + e);
-		}
-		
+	private static <T> ArrayList<T> cloneList  (ArrayList<T> list) {
+		ArrayList<T> clone = new ArrayList<T>(list.size());
+		for(T item: list) 
+			clone.add(item);
+		return clone;
 	}
-
-
 	/*
 	 * Compare if two table has the same columns.
 	 * if exist some difference write it in the file.
@@ -227,8 +207,8 @@ public class ReportGenerator {
 				
 				if(!auxC1.equals(auxC2)) {
 					description = "SAME COLUMN NAME BUT DIFFERENT TYPE";
-					writeColumn(auxC1, f , description + " IN THE TABLE: " + t1.getName() + "\n" );
-					writeColumn(auxC2, f ,  description + "IN THE TABLE: " + t1.getName() + "\n" );
+					writeObject(auxC1, f , description + " IN THE TABLE: " + t1.getName() + "\n" );
+					writeObject(auxC2, f ,  description + "IN THE TABLE: " + t1.getName() + "\n" );
 				}
 				//if they aren't dont should print the column.
 				
@@ -258,28 +238,46 @@ public class ReportGenerator {
 	// write a list of Columns in the file. 
 	private static void writeAdditionalColumns(File f, ArrayList<Column> columns, String description ){
 			for(Column columnAd : columns){
-				writeColumn(columnAd,f,description);
+				writeObject(columnAd,f,description);
 			}
 	}
 
-	//write a column in the file.
-	private static void writeColumn(Column c, File f, String description) {
-		try{ FileWriter fw1 = new FileWriter(f , true);
-				BufferedWriter bw1 = new BufferedWriter(fw1);
-				PrintWriter out1 = new PrintWriter(bw1); 
-				out1.println(description);
-				out1.println(c.toString());
-				bw1.close();
+
+	private static void writeObject(Object o, File f, String description) {
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description);
+			out1.println(o.toString());
+			bw1.close();
 		}
 		catch(IOException e) {
-			System.out.println("Error writing in writeAdditionalTables method " + e);
+			System.out.println("Error writing  writeFK method" + e);
 		}
 	}
+
+	private static boolean isTheSameColumnsList(ArrayList<Column> columns1, ArrayList<Column> columns2) {
+		if (columns1.size() != columns2.size())
+			return false;
+			
+		for (Column c1 : columns1) {
+			if (!columns2.contains(c1)) {
+				return false;
+			}
+		}
+		return true;
+	}			
+
 
 	//true if this method write in file
 	private static void AllNameofTableNoMatch(DBModel db1, DBModel db2, File f) {
 		String description = "";
-		if(db1.getTables().isEmpty() && !db2.getTables().isEmpty()) {
+		if (db1.getTables()==null)
+			throw new IllegalArgumentException("Error in method AllNameofTableNoMatch, tables of "+ db1.getName() +" are null");
+		if (db2.getTables()==null)
+			throw new IllegalArgumentException("Error in method AllNameofTableNoMatch, tables of "+ db2.getName() +" are null");
+			if(db1.getTables().isEmpty() && !db2.getTables().isEmpty()) {
 			description = "DATABASE MODEL : " + db1.getName() + " DON'T HAS TABLES.";
 			writefile(f, description);
 			description = "TABLES IN DATABASE MODEL : " + db2.getName() ;
@@ -294,8 +292,6 @@ public class ReportGenerator {
 			return;
 		}
 		if(db1.getTables().isEmpty() && db2.getTables().isEmpty()) {
-			description = "THE DATABASE MODELS  DON'T HAVE TABLES. THEY ARE EMPTY.";
-			writefile(f, description);
 			return;
 		}
 		
@@ -382,21 +378,23 @@ public class ReportGenerator {
 	
 	
 	
-	private void treatmentProcedures(DBModel db1, DBModel db2, File f) {
+	private static void treatmentProcedures(DBModel db1, DBModel db2, File f) {
 		String description = "";
 		if(db1.getProcedures().isEmpty() && db2.getProcedures().isEmpty())
+			return;
 		if(!db1.getProcedures().isEmpty() && db2.getProcedures().isEmpty()) {
+			description = "THE DATABASE: " + db2.getName().toUpperCase() + " DON'T HAS PROCEDURE\n";
+			writefile(f , description);
+			description = "PROCEDURES IN : " + db1.getName().toUpperCase() + " DATABASE\n";
+			writeProcedureList(db1.getProcedures(), description ,  f);
+			return;
+		}
+		if(db1.getProcedures().isEmpty() && !db2.getProcedures().isEmpty()) {
 			description = "THE DATABASE: " + db1.getName().toUpperCase() + " DON'T HAS PROCEDURE\n";
 			writefile(f , description);
 			description = "PROCEDURES IN : " + db2.getName().toUpperCase() + " DATABASE\n";
 			writeProcedureList(db2.getProcedures(), description ,  f);
 			return;
-		}
-		if(db1.getProcedures().isEmpty() && !db2.getProcedures().isEmpty()) {
-			description = "THE DATABASE: " + db2.getName().toUpperCase() + " DON'T HAS PROCEDURE\n";
-			writefile(f , description);
-			description = "PROCEDURES IN : " + db1.getName().toUpperCase() + " DATABASE\n";
-			writeProcedureList(db1.getProcedures(), description ,  f);
 		}
 		
 		ArrayList<String> sameProcName = findSameProcNames(db1.getProcedures(),db2.getProcedures());
@@ -422,52 +420,49 @@ public class ReportGenerator {
 			pdb2 = db2.getProcedures().get(jdb2);
 			if( !pdb1.equals(pdb2)) {
 				description = "PROCEDURE HAS THE SAME NAME BUT ARE DIFFERENT.\n"
-								+ sameProcName +" IN : " ;
-				writeProcedure(pdb1,description,f);
-				writeProcedure(pdb2,description,f);
+								+ sameProcName.get(i) +" IN  " ;
+				writeProcedure(pdb1,description + db1.getName(),f);
+				writeProcedure(pdb2,description + db2.getName() ,f);
 			}
 		}
-		//find aditional prcedures in db1
+		//find aditional procedures in db1
 		boolean writeMessage = true;
-		pdb1 = null;
-		description = "ADTIONAL PROCEDURES IN : " + db1.getName() + "\n";
-		for(int i = 0; i < db1.getProcedures().size() ; i++) {
-			pdb1 = db1.getProcedures().get(i);
-			if(!sameProcName.contains(pdb1.getName())) {
-				if(writeMessage) {
-					writefile(f,description);
-				}
-				else {
-					
+		if(db1.getProcedures().size() > sameProcName.size()) {
+			pdb1 = null;
+			description = "ADTIONAL PROCEDURES IN " + db1.getName() + "\n";
+			for(int i = 0; i < db1.getProcedures().size() ; i++) {
+				pdb1 = db1.getProcedures().get(i);
+				if(!sameProcName.contains(pdb1.getName())) {
+					if(writeMessage) {
+						writefile(f,description);
+					}
 					writeProcedure(pdb1 , "" , f);
 				}
 				
 			}
 			
 		}
-		//find aditional prcedures in db1
-		writeMessage = true;
-		pdb2 = null;
-		description = "ADTIONAL PROCEDURES IN : " + db2.getName() + "\n";
-		for(int i = 0; i < db2.getProcedures().size() ; i++) {
-			pdb1 = db2.getProcedures().get(i);
-			if(!sameProcName.contains(pdb1.getName())) {
-				if(writeMessage) {
-					writefile(f,description);
-				}
-				else {
-					
+		//find aditional procedures in db2
+		if(db2.getProcedures().size() > sameProcName.size()) {
+			writeMessage = true;
+			pdb2 = null;
+			description = "ADTIONAL PROCEDURES IN " + db2.getName() + "\n";
+			for(int i = 0; i < db2.getProcedures().size() ; i++) {
+				pdb2 = db2.getProcedures().get(i);
+				if(!sameProcName.contains(pdb2.getName())) {
+					if(writeMessage) {
+						writefile(f,description);
+					}
 					writeProcedure(pdb2 , "" , f);
 				}
 				
-			}
-			
+			}			
 		}
-
+		
 		
 	}
 
-	private void writeProcedure(Procedure p, String description, File f) {
+	private static void writeProcedure(Procedure p, String description, File f) {
 		try( FileWriter fw1 = new FileWriter(f , true);
 				 BufferedWriter bw1 = new BufferedWriter(fw1);
 				 PrintWriter out1 = new PrintWriter(bw1); )	
@@ -484,13 +479,15 @@ public class ReportGenerator {
 	}
 
 
-	// find all Procedure names that match in two Procedure list
-	private ArrayList<String> findSameProcNames(ArrayList<Procedure> p1, ArrayList<Procedure> p2) {
+	/*
+	 *  find all Procedure names that match in two Procedure list
+	 */
+	private static ArrayList<String> findSameProcNames(ArrayList<Procedure> p1, ArrayList<Procedure> p2) {
 		ArrayList<String> s = new ArrayList<String>();
 		String nameProc = "";
 		for(int i = 0; i < p1.size() ; i++ ) {
 			nameProc = p1.get(i).getName();
-			if( indexProcIn(nameProc,p2) > 0) {
+			if( indexProcIn(nameProc,p2) >= 0) {
 				s.add(nameProc);
 			}
 				
@@ -502,7 +499,7 @@ public class ReportGenerator {
 	/*
 	 *  return a the index the first occurence of nameProc in a Procedure List
 	 */
-	private int indexProcIn(String nameProc, ArrayList<Procedure> p2) {
+	private static int indexProcIn(String nameProc, ArrayList<Procedure> p2) {
 		for ( int i = 0; i < p2.size() ; i++) {
 			if(p2.get(i).getName().equals(nameProc))
 				return i;
@@ -511,7 +508,7 @@ public class ReportGenerator {
 	}
 
 
-	private void writeProcedureList(ArrayList<Procedure> procedures , String description , File f) {
+	private static void writeProcedureList(ArrayList<Procedure> procedures , String description , File f) {
 		if(procedures.isEmpty())
 			return;
 		try( FileWriter fw1 = new FileWriter(f , true);
