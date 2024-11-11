@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import com.project.structure.DBModel;
 import com.project.structure.ForeignKey;
 import com.project.structure.Index;
+import com.project.structure.Param;
+import com.project.structure.Procedure;
 import com.project.structure.Table;
 import com.project.structure.Trigger;
 import com.project.structure.Column;
@@ -883,5 +885,245 @@ public void difrentBasicModelDBTest() {
 
 		ReportGenerator.findDifferences(db0 , db1 , "file_test/SameTableDiffTimeEventMultiTriggers.txt");
 	}
+	
+	@Test
+	public void firstDBModelHasOneProcedureSecondhasntProcedures() {
+		Table t = new Table("Persona");
+		Column c1 = new Column("dni" , "int4");
+		Column c2 = new Column("nombre", "varchar");
+		Column c3 = new Column("apellido" , "varchar");
+		ArrayList<Column> cl1 = new ArrayList<Column>();
+		cl1.add(c1);
+		cl1.add(c2);
+		cl1.add(c3);
+		ArrayList<Column> pkc = new ArrayList<Column>();
+		pkc.add(c1);
+		Index pk = new Index("pk_persona",pkc);
+		ArrayList<Param> paramlist = new ArrayList<Param>();
+		ArrayList<Procedure> proclist = new ArrayList<Procedure>();
+		Param p1 = new Param("edadPersona", 1 , "int4");
+		Param p2 = new Param("edadPromedio", 4 , "float");
+		paramlist.add(p1);
+		paramlist.add(p2);
+		proclist.add(new Procedure ("prom_proc" , "void" ,   paramlist));
+		
+		t.setColumns(cl1);
+		t.setPrimaryKey(pk);
+		
+		Table t1 = new Table("Persona");
+		t1.setColumns(cl1);
+		t1.setPrimaryKey(pk);
+		ArrayList<Table> tblist = new ArrayList<Table>();
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist.add(t);
+		tblist1.add(t1);
+	
+		DBModel db = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		db.setTables(tblist);
+		db.setProcedures(proclist);
+		db1.setTables(tblist1);
+		ReportGenerator.findDifferences(db , db1 , "file_test/firstDBModelHasOneProcedureSecondhasntProcedures.txt");
+	
+		
+	}
+	
+	@Test
+	public void secondDBModelHasOneProcedureFirsthasntProcedures() {
+		Table t = new Table("Persona");
+		Column c1 = new Column("dni" , "int4");
+		Column c2 = new Column("nombre", "varchar");
+		Column c3 = new Column("apellido" , "varchar");
+		ArrayList<Column> cl1 = new ArrayList<Column>();
+		cl1.add(c1);
+		cl1.add(c2);
+		cl1.add(c3);
+		ArrayList<Column> pkc = new ArrayList<Column>();
+		pkc.add(c1);
+		Index pk = new Index("pk_persona",pkc);		
+		t.setColumns(cl1);
+		t.setPrimaryKey(pk);
+		
+		Table t1 = new Table("Persona");
+		t1.setColumns(cl1);
+		t1.setPrimaryKey(pk);
+		ArrayList<Param> paramlist1 = new ArrayList<Param>();
+		ArrayList<Procedure> proclist1 = new ArrayList<Procedure>();
+		Param p1 = new Param("edadPersona", 1 , "int4");
+		Param p2 = new Param("edadPromedio", 4 , "float");
+		paramlist1.add(p1);
+		paramlist1.add(p2);
+		proclist1.add(new Procedure ("prom_proc" , "void" , paramlist1));
+		
+		ArrayList<Table> tblist = new ArrayList<Table>();
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		
+		tblist.add(t);
+		tblist1.add(t1);
+		
+	
+		DBModel db = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		db.setTables(tblist);
+		db1.setTables(tblist1);
+		db1.setProcedures(proclist1);
+		ReportGenerator.findDifferences(db , db1 , "file_test/secondDBModelHasOneProcedureFirsthasntProcedures.txt");
+	
+		
+	}
+	
+	@Test
+	public void DBModelsOnlyhaveProcAdtheyAreTheSame() {
+		Param p1 = new Param("a", 1 , "int4");
+		Param p2 = new Param("b", 1 , "int4");
+		Param p3 = new Param("c", 4 , "varchar");
+		Param p4 = new Param("d", 1 , "Date");
+		ArrayList<Param> p1paramlist = new ArrayList<Param>();
+		ArrayList<Param> p2paramlist = new ArrayList<Param>();
+		ArrayList<Param> p3paramlist = new ArrayList<Param>();
+		ArrayList<Procedure> proclist1 = new ArrayList<Procedure>();
+		ArrayList<Procedure> proclist2 = new ArrayList<Procedure>();
+		p1paramlist.add(p1);
+		p1paramlist.add(p3);
+		
+		p2paramlist.add(p2);
+		p2paramlist.add(p3);
+		p2paramlist.add(p4);
+		
+		proclist1.add(new Procedure("subString", "varchar" , p1paramlist));
+		proclist1.add(new Procedure("calcula_interes", "float" , p2paramlist));
+		proclist1.add(new Procedure("actualiza_pedidos", "boolean" , p3paramlist));
+		
+		proclist2.add(new Procedure("subString", "varchar" , p1paramlist));
+		proclist2.add(new Procedure("calcula_interes", "float" , p2paramlist));
+		proclist2.add(new Procedure("actualiza_pedidos", "boolean" , p3paramlist));
+		
+		DBModel db1 = new DBModel("BASE DE DATOS 1");
+		db1.setProcedures(proclist1);
+		DBModel db2 = new DBModel("BASE DE DATOS 2");
+		db2.setProcedures(proclist2);
+		ReportGenerator.findDifferences(db1 , db2 , "file_test/DBModelsOnlyhaveProcAndtheyAreTheSame.txt");
+
+	}
+	
+	@Test
+	public void onlyProceduresSameNamebutDiff() {
+		Param p1 = new Param("a", 1 , "int4");
+		Param p2 = new Param("b", 1 , "int4");
+		Param p3 = new Param("c", 4 , "varchar");
+		Param p4 = new Param("d", 1 , "Date");
+		Param p5 = new Param("d", 2 , "Date");
+		ArrayList<Param> p1paramlist = new ArrayList<Param>();
+		ArrayList<Param> p2paramlist = new ArrayList<Param>();
+		ArrayList<Param> p3paramlist = new ArrayList<Param>();
+		ArrayList<Param> p4paramlist = new ArrayList<Param>();
+		ArrayList<Param> p5paramlist = new ArrayList<Param>();
+		ArrayList<Procedure> proclist1 = new ArrayList<Procedure>();
+		ArrayList<Procedure> proclist2 = new ArrayList<Procedure>();
+		p1paramlist.add(p1);
+		p1paramlist.add(p3);
+		
+		p2paramlist.add(p2);
+		p2paramlist.add(p3);
+		p2paramlist.add(p4);
+		
+		p4paramlist.add(p2);
+		p4paramlist.add(p3);
+		p4paramlist.add(p5);
+		
+		p5paramlist.add(p1);
+		
+		proclist1.add(new Procedure("subString", "varchar" , p1paramlist));
+		proclist1.add(new Procedure("calcula_interes", "float" , p2paramlist));
+		proclist1.add(new Procedure("actualiza_pedidos", "boolean" , p3paramlist));
+		
+		proclist2.add(new Procedure("subString", "int" , p1paramlist));
+		proclist2.add(new Procedure("calcula_interes", "float" , p4paramlist));
+		proclist2.add(new Procedure("actualiza_pedidos", "boolean" , p5paramlist));
+		
+		DBModel db1 = new DBModel("BASE DE DATOS 1");
+		db1.setProcedures(proclist1);
+		DBModel db2 = new DBModel("BASE DE DATOS 2");
+		db2.setProcedures(proclist2);
+		ReportGenerator.findDifferences(db1 , db2 , "file_test/onlyProceduresSameNamebutDiff.txt");
+
+	}
+	
+	@Test
+	public void onlyProceduresOneSameAndBothHasAdditional() {
+		Param p1 = new Param("a", 1 , "int4");
+		Param p2 = new Param("b", 1 , "int4");
+		Param p3 = new Param("c", 4 , "varchar");
+		
+		ArrayList<Param> p1paramlist = new ArrayList<Param>();
+		ArrayList<Param> p2paramlist = new ArrayList<Param>();
+		ArrayList<Param> p4paramlist = new ArrayList<Param>();
+
+		ArrayList<Procedure> proclist1 = new ArrayList<Procedure>();
+		ArrayList<Procedure> proclist2 = new ArrayList<Procedure>();
+		p1paramlist.add(p1);
+		p1paramlist.add(p3);
+		
+		p2paramlist.add(p1);
+		p2paramlist.add(p2);
+		
+		p4paramlist.add(p1);
+		p4paramlist.add(p2);
+	
+			
+		proclist1.add(new Procedure("subString", "varchar" , p1paramlist));
+		proclist1.add(new Procedure("calcula_sumatoria", "int" , p2paramlist));
+		
+		
+		proclist2.add(new Procedure("subString", "varchar" , p1paramlist));
+		proclist2.add(new Procedure("calcula_productoria", "int" , p4paramlist));
+		
+		
+		DBModel db1 = new DBModel("BASE DE DATOS 1");
+		db1.setProcedures(proclist1);
+		DBModel db2 = new DBModel("BASE DE DATOS 2");
+		db2.setProcedures(proclist2);
+		ReportGenerator.findDifferences(db1 , db2 , "file_test/onlyProceduresOneSameAndBothHasAdditional.txt");
+
+	}
+	
+	@Test
+	public void onlyProceduresAllHaveDifferentName() {
+		Param p1 = new Param("a", 1 , "int4");
+		Param p2 = new Param("b", 1 , "int4");
+		Param p3 = new Param("c", 4 , "varchar");
+		
+		ArrayList<Param> p1paramlist = new ArrayList<Param>();
+		ArrayList<Param> p2paramlist = new ArrayList<Param>();
+		ArrayList<Param> p4paramlist = new ArrayList<Param>();
+
+		ArrayList<Procedure> proclist1 = new ArrayList<Procedure>();
+		ArrayList<Procedure> proclist2 = new ArrayList<Procedure>();
+		p1paramlist.add(p1);
+		p1paramlist.add(p3);
+		
+		p2paramlist.add(p1);
+		p2paramlist.add(p2);
+		
+		p4paramlist.add(p1);
+		p4paramlist.add(p2);
+	
+			
+		proclist1.add(new Procedure("imprime_factura", "varchar" , p1paramlist));
+		proclist1.add(new Procedure("calcula_sumatoria", "int" , p2paramlist));
+		
+		
+		proclist2.add(new Procedure("imprime_remito", "varchar" , p1paramlist));
+		proclist2.add(new Procedure("calcula_productoria", "int" , p4paramlist));
+		
+		
+		DBModel db1 = new DBModel("BASE DE DATOS 1");
+		db1.setProcedures(proclist1);
+		DBModel db2 = new DBModel("BASE DE DATOS 2");
+		db2.setProcedures(proclist2);
+		ReportGenerator.findDifferences(db1 , db2 , "file_test/onlyProceduresAllHaveDifferentName.txt");
+
+	}
+
 
 }

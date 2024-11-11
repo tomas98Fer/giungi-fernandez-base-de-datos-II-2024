@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import com.project.structure.Column;
 import com.project.structure.DBModel;
+import com.project.structure.ForeignKey;
+import com.project.structure.Procedure;
 import com.project.structure.Index;
 import com.project.structure.Table;
 import java.util.function.Function;
@@ -39,7 +41,7 @@ public class ReportGenerator {
 				aditionalTables(db1 , db2 , f);
 				treatmentTables(db1, db2, f);
 			}
-			
+			treatmentProcedures(db1, db2 , f);
 			
 			if(f.length() == 0)
 				out.println("BOTH DATA BASE REPRESENT THE SAME MODEL.\n");
@@ -290,8 +292,6 @@ public class ReportGenerator {
 			return;
 		}
 		if(db1.getTables().isEmpty() && db2.getTables().isEmpty()) {
-			description = "THE DATABASE MODELS  DON'T HAVE TABLES. THEY ARE EMPTY.";
-			writefile(f, description);
 			return;
 		}
 		
@@ -375,5 +375,159 @@ public class ReportGenerator {
 		}
 		return false;
 	}
+	
+	
+	
+	private static void treatmentProcedures(DBModel db1, DBModel db2, File f) {
+		String description = "";
+		if(db1.getProcedures().isEmpty() && db2.getProcedures().isEmpty())
+			return;
+		if(!db1.getProcedures().isEmpty() && db2.getProcedures().isEmpty()) {
+			description = "THE DATABASE: " + db2.getName().toUpperCase() + " DON'T HAS PROCEDURE\n";
+			writefile(f , description);
+			description = "PROCEDURES IN : " + db1.getName().toUpperCase() + " DATABASE\n";
+			writeProcedureList(db1.getProcedures(), description ,  f);
+			return;
+		}
+		if(db1.getProcedures().isEmpty() && !db2.getProcedures().isEmpty()) {
+			description = "THE DATABASE: " + db1.getName().toUpperCase() + " DON'T HAS PROCEDURE\n";
+			writefile(f , description);
+			description = "PROCEDURES IN : " + db2.getName().toUpperCase() + " DATABASE\n";
+			writeProcedureList(db2.getProcedures(), description ,  f);
+			return;
+		}
+		
+		ArrayList<String> sameProcName = findSameProcNames(db1.getProcedures(),db2.getProcedures());
+		// any procedure match
+		if( sameProcName.size() == 0) {
+		
+
+			description = "ALL PROCEDURES IN THE DATABASE ARE DIFFERENT.\n" 
+							+ "PROCEDURES IN " ;
+			
+			
+			writeProcedureList(db1.getProcedures(), description  + db1.getName() + ".\n"  ,  f);
+			writeProcedureList(db2.getProcedures(), description  + db2.getName() + ".\n"  ,  f);
+			return;
+		}
+		// find difference betwen two procedure
+		int jdb1,jdb2 = 0; // cursors
+		Procedure pdb1,pdb2 = null; //procedures to campare
+		for(int i = 0; i < sameProcName.size() ; i ++) {
+			jdb1 = indexProcIn(sameProcName.get(i),db1.getProcedures());
+			jdb2 = indexProcIn(sameProcName.get(i),db2.getProcedures());
+			pdb1 = db1.getProcedures().get(jdb1);
+			pdb2 = db2.getProcedures().get(jdb2);
+			if( !pdb1.equals(pdb2)) {
+				description = "PROCEDURE HAS THE SAME NAME BUT ARE DIFFERENT.\n"
+								+ sameProcName.get(i) +" IN  " ;
+				writeProcedure(pdb1,description + db1.getName(),f);
+				writeProcedure(pdb2,description + db2.getName() ,f);
+			}
+		}
+		//find aditional procedures in db1
+		boolean writeMessage = true;
+		if(db1.getProcedures().size() > sameProcName.size()) {
+			pdb1 = null;
+			description = "ADTIONAL PROCEDURES IN " + db1.getName() + "\n";
+			for(int i = 0; i < db1.getProcedures().size() ; i++) {
+				pdb1 = db1.getProcedures().get(i);
+				if(!sameProcName.contains(pdb1.getName())) {
+					if(writeMessage) {
+						writefile(f,description);
+					}
+					writeProcedure(pdb1 , "" , f);
+				}
+				
+			}
+			
+		}
+		//find aditional procedures in db2
+		if(db2.getProcedures().size() > sameProcName.size()) {
+			writeMessage = true;
+			pdb2 = null;
+			description = "ADTIONAL PROCEDURES IN " + db2.getName() + "\n";
+			for(int i = 0; i < db2.getProcedures().size() ; i++) {
+				pdb2 = db2.getProcedures().get(i);
+				if(!sameProcName.contains(pdb2.getName())) {
+					if(writeMessage) {
+						writefile(f,description);
+					}
+					writeProcedure(pdb2 , "" , f);
+				}
+				
+			}			
+		}
+		
+		
+	}
+
+	private static void writeProcedure(Procedure p, String description, File f) {
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description);
+			out1.println(p.toString());
+			bw1.close();
+		}
+		catch(IOException e) {
+			System.out.println("Error : " + e);
+		}
+			
+		
+	}
+
+
+	/*
+	 *  find all Procedure names that match in two Procedure list
+	 */
+	private static ArrayList<String> findSameProcNames(ArrayList<Procedure> p1, ArrayList<Procedure> p2) {
+		ArrayList<String> s = new ArrayList<String>();
+		String nameProc = "";
+		for(int i = 0; i < p1.size() ; i++ ) {
+			nameProc = p1.get(i).getName();
+			if( indexProcIn(nameProc,p2) >= 0) {
+				s.add(nameProc);
+			}
+				
+				
+		}
+		return s;
+	}
+
+	/*
+	 *  return a the index the first occurence of nameProc in a Procedure List
+	 */
+	private static int indexProcIn(String nameProc, ArrayList<Procedure> p2) {
+		for ( int i = 0; i < p2.size() ; i++) {
+			if(p2.get(i).getName().equals(nameProc))
+				return i;
+		} 
+		return -1;
+	}
+
+
+	private static void writeProcedureList(ArrayList<Procedure> procedures , String description , File f) {
+		if(procedures.isEmpty())
+			return;
+		try( FileWriter fw1 = new FileWriter(f , true);
+				 BufferedWriter bw1 = new BufferedWriter(fw1);
+				 PrintWriter out1 = new PrintWriter(bw1); )	
+		{
+			out1.println(description);
+			for(Procedure p : procedures) {
+				 out1.println(p.toString());
+				
+			}
+			bw1.close();
+		}
+		catch(IOException e) {
+			System.out.println("Error : " + e);
+		}
+		
+		
+	}
+	
 
 }
