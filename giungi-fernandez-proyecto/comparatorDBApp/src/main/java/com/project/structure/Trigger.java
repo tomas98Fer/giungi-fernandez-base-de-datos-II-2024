@@ -51,13 +51,13 @@ public class Trigger extends MetaObjectDB {
 		if(!(o instanceof Trigger))
 			return false;
 		Trigger t = (Trigger) o;
-		boolean result = false;
-		result = this.getName().equals(t.getName());
-		if(result) {
-			result = this.getTime().equals(t.getTime());
-			if(result) {
-				result = this.getEvent().equals(t.getEvent());
-				return result;
+		boolean same_trigName = false;
+		same_trigName = this.getName().equals(t.getName());
+		if(same_trigName) {
+			same_trigName = this.getTime().equals(t.getTime());
+			if(same_trigName) {
+				same_trigName = this.getEvent().equals(t.getEvent());
+				return same_trigName;
 					
 			}
 		}

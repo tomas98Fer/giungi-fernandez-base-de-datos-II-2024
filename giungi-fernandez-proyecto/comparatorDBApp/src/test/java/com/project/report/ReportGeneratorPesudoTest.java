@@ -8,7 +8,7 @@ import com.project.structure.DBModel;
 import com.project.structure.ForeignKey;
 import com.project.structure.Index;
 import com.project.structure.Table;
-import com.project.report.ReportGenerator;
+import com.project.structure.Trigger;
 import com.project.structure.Column;
 
 public class ReportGeneratorPesudoTest {
@@ -364,7 +364,7 @@ public void difrentBasicModelDBTest() {
 		db0.setTables(tblist0);
 		db1.setTables(tblist1);
 	
-		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffFKColumns.txt");
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/sameFK.txt");
 	}
 
 	@Test
@@ -418,6 +418,470 @@ public void difrentBasicModelDBTest() {
 		db1.setTables(tblist1);
 	
 		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffFKColumns.txt");
+	}
+
+	@Test
+	public void sameTableDiffColumnsOrderIdxTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+		ArrayList<Column> idxColList0 = new ArrayList<Column>();
+		idxColList0.add(c0);
+		idxColList0.add(c1);
+		Index index0 = new Index("idx_persona_id_name",idxColList0);
+		ArrayList<Column> idxColList1 = new ArrayList<Column>();
+		idxColList1.add(c1);
+		idxColList1.add(c0);
+		Index index1 = new Index("idx_persona_id_name",idxColList1);
+		ArrayList<Index> idxList0 = new ArrayList<Index>();
+		idxList0.add(index0);
+		ArrayList<Index> idxList1 = new ArrayList<Index>();
+		idxList1.add(index1);
+		t0.setIndexes(idxList0);
+		t1.setIndexes(idxList1);
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffIdxOrderColumns.txt");
+	
+	}
+
+	@Test
+	public void sameTableDiffColumnsIdxTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+		ArrayList<Column> idxColList0 = new ArrayList<Column>();
+		idxColList0.add(c0);
+		idxColList0.add(c1);
+		Index index0 = new Index("idx_persona_id_name",idxColList0);
+		ArrayList<Column> idxColList1 = new ArrayList<Column>();
+		idxColList1.add(c0);
+		idxColList1.add(c2);
+		Index index1 = new Index("idx_persona_id_name",idxColList1);
+		ArrayList<Index> idxList0 = new ArrayList<Index>();
+		idxList0.add(index0);
+		ArrayList<Index> idxList1 = new ArrayList<Index>();
+		idxList1.add(index1);
+		t0.setIndexes(idxList0);
+		t1.setIndexes(idxList1);
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffIdxColumns.txt");
+	
+	}
+
+
+	@Test
+	public void sameTableSameIdxTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+		ArrayList<Column> idxColList0 = new ArrayList<Column>();
+		idxColList0.add(c0);
+		idxColList0.add(c1);
+		Index index0 = new Index("UK_persona_id_name",idxColList0);
+		ArrayList<Column> idxColList1 = new ArrayList<Column>();
+		idxColList1.add(c0);
+		idxColList1.add(c1);
+		Index index1 = new Index("UK_persona_id_name",idxColList1);
+		ArrayList<Index> idxList0 = new ArrayList<Index>();
+		idxList0.add(index0);
+		ArrayList<Index> idxList1 = new ArrayList<Index>();
+		idxList1.add(index1);
+		t0.setIndexes(idxList0);
+		t1.setIndexes(idxList1);
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/SameIdxColumns.txt");
+	
+	}
+
+	@Test
+	public void sameTableDiffColumnsUKTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+		ArrayList<Column> idxColList0 = new ArrayList<Column>();
+		idxColList0.add(c0);
+		idxColList0.add(c1);
+		Index index0 = new Index("UK_persona_id_name",idxColList0);
+		ArrayList<Column> idxColList1 = new ArrayList<Column>();
+		idxColList1.add(c0);
+		idxColList1.add(c2);
+		Index index1 = new Index("UK_persona_id_ape",idxColList1);
+		ArrayList<Index> idxList0 = new ArrayList<Index>();
+		idxList0.add(index0);
+		ArrayList<Index> idxList1 = new ArrayList<Index>();
+		idxList1.add(index1);
+		t0.setUniqueKeys(idxList0);
+		t1.setUniqueKeys(idxList1);
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/diffUKColumns.txt");
+	
+	}	
+	
+	@Test
+	public void sameTableExtraUniqueKey(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+
+		ArrayList<Column> idxColList0 = new ArrayList<Column>();
+		idxColList0.add(c0);
+		idxColList0.add(c1);
+		Index index0 = new Index("UK_persona_id_name",idxColList0);
+		ArrayList<Index> idxList0 = new ArrayList<Index>();
+		idxList0.add(index0);
+
+		ArrayList<Column> idxColList1 = new ArrayList<Column>();
+		idxColList1.add(c2);
+		idxColList1.add(c3);
+		Index index1 = new Index("UK_ape_dire",idxColList1);
+		ArrayList<Column> idxColList2 = new ArrayList<Column>();
+		idxColList2.add(c0);
+		idxColList2.add(c1);
+		Index index2 = new Index("UK_persona_id_name",idxColList2);
+		
+		ArrayList<Index> idxList1 = new ArrayList<Index>();
+		idxList1.add(index1);
+		idxList1.add(index2);
+		
+		t0.setUniqueKeys(idxList0);
+		t1.setUniqueKeys(idxList1);
+
+		String AUX;
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		AUX = db0.getTables().get(0).getUniqueKeys().toString();
+		System.out.println(AUX.toString());
+		AUX = db1.getTables().get(0).getUniqueKeys().toString();
+		System.out.println(AUX.toString());
+
+		System.out.println("REPORT GENERATOR \n\n");
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/ExtraUK.txt");
+	
+		AUX = db0.getTables().get(0).getUniqueKeys().toString();
+		System.out.println(AUX.toString());
+		AUX = db1.getTables().get(0).getUniqueKeys().toString();
+		System.out.println(AUX.toString());
+
+	}
+	
+	@Test
+	public void sameTableDiffTimeEventTriggersTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+
+
+		ArrayList<Trigger> trigList0 = new ArrayList<Trigger>();
+		ArrayList<Trigger> trigList1 = new ArrayList<Trigger>();
+
+		Trigger tr1 = new Trigger("trg_auditria", "BEFORE", "INSERT");
+		Trigger tr2 = new Trigger("trg_auditria", "AFTER", "INSERT");
+		
+		trigList0.add(tr1);
+		trigList1.add(tr2);
+
+		t0.setTriggers(trigList0);
+		t1.setTriggers(trigList1);
+
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/SameTableDiffTimeEventTriggers.txt");
+	}
+
+	@Test
+	public void sameTableSameTriggersTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+
+
+		ArrayList<Trigger> trigList0 = new ArrayList<Trigger>();
+		ArrayList<Trigger> trigList1 = new ArrayList<Trigger>();
+
+		Trigger tr1 = new Trigger("trg_auditria", "BEFORE", "INSERT");
+		Trigger tr2 = new Trigger("trg_auditria", "BEFORE", "INSERT");
+		
+		trigList0.add(tr1);
+		trigList1.add(tr2);
+
+		t0.setTriggers(trigList0);
+		t1.setTriggers(trigList1);
+
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/SameTableSameTriggers.txt");
+	}
+
+	@Test
+	public void sameTableDiffActionTimeTriggersTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+
+
+		ArrayList<Trigger> trigList0 = new ArrayList<Trigger>();
+		ArrayList<Trigger> trigList1 = new ArrayList<Trigger>();
+
+		Trigger tr1 = new Trigger("trg_auditria", "AFTER", "UPDATE");
+		Trigger tr2 = new Trigger("trg_auditria", "AFTER", "INSERT");
+		
+		trigList0.add(tr1);
+		trigList1.add(tr2);
+
+		t0.setTriggers(trigList0);
+		t1.setTriggers(trigList1);
+
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/SameTableDiffActionEventTriggers.txt");
+	}
+
+	@Test
+	public void sameTableDiffTriggerNameTest(){
+		DBModel db0 = new DBModel("DATA BASE 1");
+		DBModel db1 = new DBModel("DATA BASE 2");
+		Table t0 = new Table("Persona");
+		Table t1 = new Table("Persona");
+		Column c0 = new Column("id", "int");
+		Column c1 = new Column("nombre", "varchar");
+		Column c2 = new Column("apellido", "varchar");
+		Column c3 = new Column("direccion" , "varchar");
+		
+		ArrayList<Column> collist0 = new ArrayList<Column>();
+		collist0.add(c0);
+		collist0.add(c1);
+		collist0.add(c2);
+		collist0.add(c3);
+		ArrayList<Column> collist1 = new ArrayList<Column>();
+		collist1.add(c0);
+		collist1.add(c1);
+		collist1.add(c2);
+		collist1.add(c3);
+
+		t0.setColumns(collist0);
+		t1.setColumns(collist1);
+
+
+		ArrayList<Trigger> trigList0 = new ArrayList<Trigger>();
+		ArrayList<Trigger> trigList1 = new ArrayList<Trigger>();
+
+		Trigger tr1 = new Trigger("trg_auditria", "BEFORE", "INSERT");
+		Trigger tr2 = new Trigger("trg_auditria", "AFTER", "INSERT");
+		
+		trigList0.add(tr1);
+		trigList0.add(tr1);
+		trigList0.add(tr1);
+		trigList1.add(tr1);
+		trigList1.add(tr2);
+		trigList1.add(tr2);
+
+		t0.setTriggers(trigList0);
+		t1.setTriggers(trigList1);
+
+		ArrayList<Table> tblist0 = new ArrayList<Table>();
+		tblist0.add(t0);
+		ArrayList<Table> tblist1 = new ArrayList<Table>();
+		tblist1.add(t1);
+		db0.setTables(tblist0);
+		db1.setTables(tblist1);
+
+		ReportGenerator.findDifferences(db0 , db1 , "file_test/SameTableDiffTimeEventMultiTriggers.txt");
 	}
 
 }
