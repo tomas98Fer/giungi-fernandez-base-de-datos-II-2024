@@ -1,5 +1,4 @@
 # giungi-fernandez-base-de-datos-II-2024
-
 Autores: Giungi Agustín, Fernández Tomás
 Año: 2024
 Materia: Base de Datos II (2024) - Código: 3335
@@ -10,6 +9,7 @@ ComparatorDB:
 
 Esta herramienta genera un reporte en un archivo con las diferencias estructurales entre dos bases de datos del mismo motor. Los datos de conexión de cada base de datos se reciben como parámetros. A partir de esta información, el sistema extrae los metadatos y genera un informe detallado con las diferencias detectadas entre ambas bases de datos.
 
+El programa funciona para los motores de BDD postresql, mysql y oracle.
 
 Si desea cargar valores por defecto, puede hacerlo cargando el archivo config.properties que se encuentra en el directorio resources. En él se incluyen las librerías .jar de los drivers de los respectivos motores de base de datos.
 
@@ -28,3 +28,7 @@ mvn exec:java
 
 
 Antes de finalizar, el programa avisará que ha generado el reporte. Este reporte se encuentra en el directorio comparatorDB/files/report_diff.txt.
+En el reporte se veran las diferencias entre las tablas, a nivel de columnas, claves(primarias,unicas, foraneas e indices) y triggers.
+Tambien se veran las diferencias entre los procedimientos de cada BDD.
+Los scripts de pruebas se encuentran en la carpeta "Scripts".
+
