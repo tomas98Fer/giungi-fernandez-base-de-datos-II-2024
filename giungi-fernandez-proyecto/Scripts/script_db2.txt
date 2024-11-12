@@ -1,9 +1,14 @@
+-- Database: db1_tester
+
+-- DROP DATABASE IF EXISTS db1_tester;
+
 CREATE schema testdb2;
 
 set search_path to testdb2;
 
 
 --columna extra
+--diferente primary key
 CREATE TABLE users (			
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE,
@@ -32,20 +37,20 @@ CREATE TABLE items(
 CREATE TRIGGER set_status_insert
 AFTER INSERT ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_user_id(user_id);
+EXECUTE FUNCTION set_triggs();
 
 
 --trigger distinto nombre
 CREATE TRIGGER set_status_after_update
 BEFORE INSERT ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_default_status(user_id,order_date);
+EXECUTE FUNCTION set_triggs();
 
 --trigger distinto 	evento
-CREATE TRIGGER set_status_insert
-AFTER INSERT ON orders
+CREATE TRIGGER set_status_update
+AFTER UPDATE ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_default_status(user_id,order_date);
+EXECUTE FUNCTION set_triggs();
 
 --index distinto orden columnas
 CREATE INDEX idx_order_itemid ON items (item_value,item_id);
@@ -70,4 +75,13 @@ BEGIN
     RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE FUNCTION set_triggs()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    SELECT * FROM orders;
+END;
+$$ LANGUAGE plpgsql;
+
 

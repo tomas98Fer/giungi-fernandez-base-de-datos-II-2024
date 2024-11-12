@@ -1,3 +1,7 @@
+-- Database: db1_tester
+
+-- DROP DATABASE IF EXISTS db1_tester;
+
 CREATE schema testdb1;
 set search_path to testdb1;
 CREATE TABLE users (
@@ -24,12 +28,16 @@ CREATE TABLE items(
 CREATE TRIGGER set_status_insert
 BEFORE INSERT ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_user_id(user_id);
+EXECUTE FUNCTION set_trigg();
 
 CREATE TRIGGER set_status_before_update
 BEFORE INSERT ON orders
 FOR EACH ROW
-EXECUTE FUNCTION set_default_status(user_id,order_id);
+EXECUTE FUNCTION set_trigg();
+
+CREATE TRIGGER set_status_update
+AFTER TRUNCATE ON orders
+EXECUTE FUNCTION set_trigg();
 
 
 CREATE INDEX idx_order_itemid ON items (item_id,item_value);
@@ -49,5 +57,14 @@ RETURNS BOOLEAN AS
 $$
 BEGIN
     RETURN true;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE FUNCTION set_trigg()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    SELECT * FROM orders;
 END;
 $$ LANGUAGE plpgsql;
