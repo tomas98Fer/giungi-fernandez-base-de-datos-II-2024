@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 import com.project.structure.Column;
 import com.project.structure.DBModel;
-import com.project.structure.ForeignKey;
 import com.project.structure.Procedure;
 import com.project.structure.Index;
 import com.project.structure.Table;
 import java.util.function.Function;
 
 public class ReportGenerator {
+	
 
 	/**
 	 * 
@@ -30,29 +30,18 @@ public class ReportGenerator {
 			throw new IllegalArgumentException("File name is incorrect.");
 		File f = new File("file/" + fileName);
 
-		try( FileWriter fw = new FileWriter(f);
-			 BufferedWriter bw = new BufferedWriter(fw);
-			 PrintWriter out = new PrintWriter(bw); )	
-		{
-			
-			
-			AllNameofTableNoMatch(db1 , db2 , f);
-			if(f.length() == 0) {
-				aditionalTables(db1 , db2 , f);
-				treatmentTables(db1, db2, f);
-			}
-			treatmentProcedures(db1, db2 , f);
-			
-			if(f.length() == 0)
-				out.println("BOTH DATA BASE REPRESENT THE SAME MODEL.\n");
-			
-			bw.close();
+		AllNameofTableNoMatch(db1 , db2 , f);
+		if(f.length() == 0) {
+			aditionalTables(db1 , db2 , f);
+			treatmentTables(db1, db2, f);
 		}
-		catch(IOException e) {
-			System.out.println("Error E/S: "+e);
+		treatmentProcedures(db1, db2 , f);
+		
+		if(f.length() == 0) {
+			writefile(f,"BOTH DATA BASE REPRESENT THE SAME MODEL.");
 		}
-				
-}
+		
+	}
 
 	
 	/*
@@ -90,7 +79,7 @@ public class ReportGenerator {
 
 		objColumns1 = cloneList(objColumns1);
 		objColumns2 = cloneList(objColumns2);
-		// Lógica para eliminar elementos coincidentes de ambas listas sin perder índice
+		// logic to delete match elements of both lists without the index.
 		int i = 0;
 		while (i < objColumns1.size()) {
 			T o1 = objColumns1.get(i);
@@ -134,18 +123,18 @@ public class ReportGenerator {
 		if(pkColumnst1.size() == pkColumnst2.size()) {
 			for(int i = 0 ; i < pkColumnst1.size() ; i++) {
 				if(!pkColumnst1.get(i).equals(pkColumnst2.get(i))) {
-					description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName() + "\n";
-					writeObject(t1,f, description);
-					description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName() + "\n";
-					writeObject(t2 , f , description);
+					description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName();
+					writeObject(pk1,f, description);
+					description = "PRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName();
+					writeObject(pk2 , f , description);
 				}
 			}
 		}
 		else {
-			description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName() + "\n";
-			writeObject(t1,f, description);
-			description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName() + "\n";
-			writeObject(t2 , f , description);
+			description = "PRIMARY KEYS ARE DIFFRENT.\nPRIMARY KEY IN DATA BASE 1, TABLE: " + t1.getName();
+			writeObject(pk1,f, description);
+			description = "PRIMARY KEY IN DATA BASE 2, TABLE: " + t2.getName();
+			writeObject(pk2 , f , description);
 		}
 		
 	}
@@ -159,7 +148,7 @@ public class ReportGenerator {
 			bw1.close();
 		}
 		catch(IOException e) {
-			System.out.println("Error writing  writefile method" + e);
+			System.out.println("Error:" + e);
     }
 		
 	}
@@ -180,7 +169,7 @@ public class ReportGenerator {
 		int pos = -1;
 		Column auxC1;
 		Column auxC2;
-		String description;
+		String description = "";
 		
 		ArrayList<Column> addColt1 = new ArrayList<Column>();
 		ArrayList<Column> addColt2 = new ArrayList<Column>();
@@ -207,8 +196,11 @@ public class ReportGenerator {
 				
 				if(!auxC1.equals(auxC2)) {
 					description = "SAME COLUMN NAME BUT DIFFERENT TYPE";
-					writeObject(auxC1, f , description + " IN THE TABLE: " + t1.getName() + "\n" );
-					writeObject(auxC2, f ,  description + "IN THE TABLE: " + t1.getName() + "\n" );
+					writefile(f , description);
+					description = "COLUMN: " + auxC1.getName().toUpperCase() + " FROM " + t1.getName().toUpperCase() + " TABLE, IN DATABASE 1.";
+					writeObject(auxC1, f , description );
+					description = "COLUMN " + auxC1.getName().toUpperCase() + " FROM " + t2.getName().toUpperCase() + " TABLE, IN DATABASE 2.";
+					writeObject(auxC2, f ,  description);
 				}
 				//if they aren't dont should print the column.
 				
@@ -228,10 +220,9 @@ public class ReportGenerator {
 		}
 		// print aditional tables to both tables weather they have it.
 		
-		description = "ADDITIONAL COLUMNS ON TABLE " + t1.getName() + " OF DATABASE 1";
+		description = "ADDITIONAL COLUMNS IN TABLE " + t1.getName().toUpperCase() + ",OF DATABASE 1.";
 		writeAdditionalColumns(f,addColt1,description);
-		
-		description = "ADDITIONALS COLUMN ON TABLE " + t2.getName() + " OF DATABASE 2";
+		description = "ADDITIONALS COLUMN IN TABLE " + t2.getName().toUpperCase() + " OF DATABASE 2." ;
 		writeAdditionalColumns(f,addColt2,description);
 	}
 
@@ -253,41 +244,29 @@ public class ReportGenerator {
 			bw1.close();
 		}
 		catch(IOException e) {
-			System.out.println("Error writing  writeFK method" + e);
+			System.out.println("Error: " + e);
 		}
 	}
-
-	private static boolean isTheSameColumnsList(ArrayList<Column> columns1, ArrayList<Column> columns2) {
-		if (columns1.size() != columns2.size())
-			return false;
-			
-		for (Column c1 : columns1) {
-			if (!columns2.contains(c1)) {
-				return false;
-			}
-		}
-		return true;
-	}			
-
 
 	//true if this method write in file
 	private static void AllNameofTableNoMatch(DBModel db1, DBModel db2, File f) {
 		String description = "";
-		if (db1.getTables()==null)
-			throw new IllegalArgumentException("Error in method AllNameofTableNoMatch, tables of "+ db1.getName() +" are null");
-		if (db2.getTables()==null)
-			throw new IllegalArgumentException("Error in method AllNameofTableNoMatch, tables of "+ db2.getName() +" are null");
-			if(db1.getTables().isEmpty() && !db2.getTables().isEmpty()) {
-			description = "DATABASE MODEL : " + db1.getName() + " DON'T HAS TABLES.";
+		if (db1.getTables()== null)
+			throw new IllegalArgumentException("Parameter error.");
+		
+		if (db2.getTables() == null)
+			throw new IllegalArgumentException("Parameter error.");
+		if(db1.getTables().isEmpty() && !db2.getTables().isEmpty()) {
+			description = "DATABASE 1 DON'T HAS TABLES.";
 			writefile(f, description);
-			description = "TABLES IN DATABASE MODEL : " + db2.getName() ;
+			description = "TABLES IN DATABASE 1.";
 			writeTables(f , db2.getTables() , description);
 			return;
 		}
 		if(!db1.getTables().isEmpty() && db2.getTables().isEmpty()) {
-			description = "DATABASE MODEL : " + db2.getName() + " DON'T HAS TABLES.";
+			description = "DATABASE 2 DON'T HAS TABLES.";
 			writefile(f, description);
-			description = "TABLES IN DATABASE MODEL : " + db1.getName() ;
+			description = "TABLES IN DATABASE 2.";
 			writeTables(f , db1.getTables() , description);
 			return;
 		}
@@ -302,38 +281,34 @@ public class ReportGenerator {
 			return;
 		}
 		description = "ALL TABLES IN EACH DATABASE MODEL ARE DIFFERENT.\n" ;
-		writeTables(f, db1.getTables() , description + "TABLES FROM: " + db1.getName() + "\n" );
-		writeTables(f, db2.getTables() , description + "TABLES FROM: " + db2.getName() + "\n");
+		writeTables(f, db1.getTables() , description + "TABLES FROM DATABASE 1.");
+		writeTables(f, db2.getTables() , description + "TABLES FROM DATABASE 2.");
 		
 		return;
 		
 	}
 
 	//true if this method write in the file.
-	private static boolean aditionalTables(DBModel db1, DBModel db2, File f) {
-		
-		boolean w1 = false;
-		boolean w2 = false;
+	private static void aditionalTables(DBModel db1, DBModel db2, File f) {
 		String description = "ADITIONAL TABLES IN : ";
 		ArrayList<Table> addtabledb1 = noMatchingTables(db1.getTables() , db2.getTables()); 
 		//at least db1 has one table that match with some table in db2.
 		if(addtabledb1.size() < db1.getTables().size() && !addtabledb1.isEmpty()) {
 			
-			w1 = writeTables(f , addtabledb1 , description +  db1.getName().toUpperCase());
+			writeTables(f , addtabledb1 , description + " DATABASE 1.");
 		}
 		ArrayList<Table> addtabledb2 = noMatchingTables(db2.getTables() , db1.getTables());
 		if(addtabledb2.size() < db2.getTables().size() && !addtabledb2.isEmpty()) {
 			
-			w2 = writeTables(f , addtabledb2 , description +  db2.getName().toUpperCase());
+			writeTables(f , addtabledb2 , description + " DATABASE 2.") ;
 		}
 
-		return w1 || w2;
 	}
 	
 	//Write a list of tables in the file.
-	private static boolean writeTables(File f, ArrayList<Table> addTables, String description) {
+	private static void writeTables(File f, ArrayList<Table> addTables, String description) {
 		if(addTables.isEmpty())
-			return false;
+			return;
 		try( FileWriter fw1 = new FileWriter(f , true);
 				 BufferedWriter bw1 = new BufferedWriter(fw1);
 				 PrintWriter out1 = new PrintWriter(bw1); )	
@@ -346,10 +321,9 @@ public class ReportGenerator {
 			bw1.close();
 		}
 		catch(IOException e) {
-			System.out.println("Error escribiendo en  metodo writeAdditionalTables" + e);
+			System.out.println("Error: " + e);
 		}
 		
-		return true;
 	}
 
 	// return all tables in tables1 that aren't matching with table names from tables2. 
@@ -383,16 +357,16 @@ public class ReportGenerator {
 		if(db1.getProcedures().isEmpty() && db2.getProcedures().isEmpty())
 			return;
 		if(!db1.getProcedures().isEmpty() && db2.getProcedures().isEmpty()) {
-			description = "THE DATABASE: " + db2.getName().toUpperCase() + " DON'T HAS PROCEDURE\n";
+			description = "THE DATABASE 2 DON'T HAS PROCEDURE";
 			writefile(f , description);
-			description = "PROCEDURES IN : " + db1.getName().toUpperCase() + " DATABASE\n";
+			description = "PROCEDURES IN DATABASE 1:";
 			writeProcedureList(db1.getProcedures(), description ,  f);
 			return;
 		}
 		if(db1.getProcedures().isEmpty() && !db2.getProcedures().isEmpty()) {
-			description = "THE DATABASE: " + db1.getName().toUpperCase() + " DON'T HAS PROCEDURE\n";
+			description = "THE DATABASE 1 DON'T HAS PROCEDURE";
 			writefile(f , description);
-			description = "PROCEDURES IN : " + db2.getName().toUpperCase() + " DATABASE\n";
+			description = "PROCEDURES IN DATABASE 2";
 			writeProcedureList(db2.getProcedures(), description ,  f);
 			return;
 		}
@@ -402,12 +376,12 @@ public class ReportGenerator {
 		if( sameProcName.size() == 0) {
 		
 
-			description = "ALL PROCEDURES IN THE DATABASE ARE DIFFERENT.\n" 
-							+ "PROCEDURES IN " ;
-			
-			
-			writeProcedureList(db1.getProcedures(), description  + db1.getName() + ".\n"  ,  f);
-			writeProcedureList(db2.getProcedures(), description  + db2.getName() + ".\n"  ,  f);
+			description = "ALL PROCEDURES IN THE DATABASE ARE DIFFERENT." ;
+			writefile(f , description);
+			description = "PROCEDURES IN DATABASE 1"; 			
+			writeProcedureList(db1.getProcedures(), description ,  f);
+			description = "PROCEDURES IN DATABASE 2"; 
+			writeProcedureList(db2.getProcedures(), description ,  f);
 			return;
 		}
 		// find difference betwen two procedure
@@ -419,17 +393,17 @@ public class ReportGenerator {
 			pdb1 = db1.getProcedures().get(jdb1);
 			pdb2 = db2.getProcedures().get(jdb2);
 			if( !pdb1.equals(pdb2)) {
-				description = "PROCEDURE HAS THE SAME NAME BUT ARE DIFFERENT.\n"
-								+ sameProcName.get(i) +" IN  " ;
-				writeProcedure(pdb1,description + db1.getName(),f);
-				writeProcedure(pdb2,description + db2.getName() ,f);
+				description = "PROCEDURE " + sameProcName.get(i).toUpperCase() + " HAS THE SAME NAME BUT ARE DIFFERENT";
+				writefile(f,description);
+				writeProcedure(pdb1, "" , f);
+				writeProcedure(pdb2, "" , f);
 			}
 		}
 		//find aditional procedures in db1
 		boolean writeMessage = true;
 		if(db1.getProcedures().size() > sameProcName.size()) {
 			pdb1 = null;
-			description = "ADTIONAL PROCEDURES IN " + db1.getName() + "\n";
+			description = "ADTIONAL PROCEDURES IN DATABASE 1";
 			for(int i = 0; i < db1.getProcedures().size() ; i++) {
 				pdb1 = db1.getProcedures().get(i);
 				if(!sameProcName.contains(pdb1.getName())) {
@@ -446,7 +420,7 @@ public class ReportGenerator {
 		if(db2.getProcedures().size() > sameProcName.size()) {
 			writeMessage = true;
 			pdb2 = null;
-			description = "ADTIONAL PROCEDURES IN " + db2.getName() + "\n";
+			description = "ADTIONAL PROCEDURES IN DATABASE 2";
 			for(int i = 0; i < db2.getProcedures().size() ; i++) {
 				pdb2 = db2.getProcedures().get(i);
 				if(!sameProcName.contains(pdb2.getName())) {

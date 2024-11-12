@@ -53,8 +53,6 @@ public void difrentBasicModelDBTest() {
 		db.setTables(tblist);
 		db1.setTables(tblist1);
 		ReportGenerator.findDifferences(db , db1 , "file_test/test1.txt");
-		System.out.println("END, THE FILE WAS MADE.");
-
 	}
 	
 	@Test
@@ -676,17 +674,11 @@ public void difrentBasicModelDBTest() {
 		db1.setTables(tblist1);
 
 		AUX = db0.getTables().get(0).getUniqueKeys().toString();
-		System.out.println(AUX.toString());
 		AUX = db1.getTables().get(0).getUniqueKeys().toString();
-		System.out.println(AUX.toString());
-
-		System.out.println("REPORT GENERATOR \n\n");
 		ReportGenerator.findDifferences(db0 , db1 , "file_test/ExtraUK.txt");
 	
 		AUX = db0.getTables().get(0).getUniqueKeys().toString();
-		System.out.println(AUX.toString());
 		AUX = db1.getTables().get(0).getUniqueKeys().toString();
-		System.out.println(AUX.toString());
 
 	}
 	

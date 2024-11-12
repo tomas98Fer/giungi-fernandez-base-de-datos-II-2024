@@ -30,14 +30,16 @@ public abstract class ExtractionMetaDataDB {
 	
 	/**
 	 * 
-	 * @param c ConnectionDB connection information. The conncetion has been created.
+	 * @param c ConnectionDB connection information. The connection has been created.
 	 * @throws SQLException
 	 */
 	public ExtractionMetaDataDB(ConnectionDB c) throws SQLException{
 		if(c == null) 
 			throw new IllegalArgumentException("Connection must have been alredy created");
+		System.out.println("Recovering " + c.getDatabaseName() + " data.");
 		this.c = c;
 		metaData = c.getConnection().getMetaData();
+		
 		
 	}
 	
@@ -63,9 +65,7 @@ public abstract class ExtractionMetaDataDB {
 		String catalogName = c.getDatabaseName();
 		String schemaName = c.getSchema();
 		String[] typeTable = {"TABLE"};	
-		System.out.println("PREVIO A OBTENER INFORMACION DE LAS TABLAS");
 		ResultSet rsTables = metaData.getTables(catalogName, schemaName, null, typeTable);
-		System.out.println("OBTUVE INFORMACION DE LAS TABLAS");
 		ArrayList<Table> tableList = new ArrayList<Table>();
 		String tableName = null;
 		ArrayList<Column> columns = null;
