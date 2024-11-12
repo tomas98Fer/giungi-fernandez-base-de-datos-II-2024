@@ -102,7 +102,6 @@ public class ForeignKey extends Index{
 			}
 		
 		}
-		System.out.println("Foreign key not equals");
 		return false;
 	}
 	
