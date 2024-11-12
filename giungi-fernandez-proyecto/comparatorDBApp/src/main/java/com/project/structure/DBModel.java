@@ -4,14 +4,20 @@ import java.util.ArrayList;
 
 public class DBModel extends MetaObjectDB {
 
-	
-	public DBModel(String name) {
-		super(name);
-	}
 
 	private ArrayList<Table> tables;
 	
 	private ArrayList<Procedure> procedures;
+	
+	public DBModel(String name) {
+		super(name);
+		this.tables = new ArrayList<Table>();
+		this.procedures = new ArrayList<Procedure>();
+	}
+
+
+	
+
 
 	/**
 	 * getter tables method.
